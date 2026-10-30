@@ -51,7 +51,7 @@ Bez `RESEND_API_KEY` se poptávky jen uloží do databáze (vidíte je v D1 konz
 2. Veřejný klíč (Site Key) vložte do `src/data/site.ts` → `turnstileSiteKey`.
 3. Tajný klíč jako proměnnou `TURNSTILE_SECRET`.
 
-## 7. Měření a Google Ads
+## 6. Měření a Google Ads
 
 V `src/data/site.ts` → `analytics` vyplňte:
 - `gtmId` (Google Tag Manager, doporučeno) **nebo** `ga4Id` a `adsId`.
@@ -59,7 +59,7 @@ V `src/data/site.ts` → `analytics` vyplňte:
 - Cookie lišta používá **Consent Mode v2** (výchozí stav zamítnuto), což Google Ads v EU vyžaduje.
 - Formulář ukládá `gclid` a UTM parametry, takže u každé poptávky víte, z jaké kampaně přišla.
 
-## 8. Google Search Console
+## 7. Google Search Console
 
 1. Přidejte doménu `klima-hisense.cz` (ověření DNS záznamem v Cloudflare).
 2. Odešlete sitemapu `https://klima-hisense.cz/sitemap-index.xml`.
