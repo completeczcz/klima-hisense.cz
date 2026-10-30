@@ -1,0 +1,126 @@
+---
+import Base from '../../layouts/Base.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { getCollection, render } from 'astro:content';
+import { catNames, readingTime, fmtDate, postImage, isPhoto } from '../../data/blog';
+import { site } from '../../data/site';
+import { series, mainImage } from '../../data/products';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p, all: posts } }));
+}
+const { post, all } = Astro.props;
+const { Content, headings } = await render(post);
+const d = post.data;
+const related = (d.related.length ? d.related.map((r: string) => all.find((p: any) => p.id === r)).filter(Boolean) : all.filter((p: any) => p.id !== post.id && p.data.category === d.category)).slice(0, 3);
+const toc = headings.filter((h) => h.depth === 2);
+const url = new URL(`/blog/${post.id}/`, site.url).href;
+const img = postImage(post.id);
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: d.h1 ?? d.title,
+  description: d.description,
+  image: new URL(img, site.url).href,
+  datePublished: d.published.toISOString(),
+  dateModified: (d.updated ?? d.published).toISOString(),
+  mainEntityOfPage: url,
+  author: { '@type': 'Organization', name: 'Redakce Klima Hisense', url: site.url },
+  publisher: { '@type': 'Organization', name: `${site.name} – ${site.company.name}`, logo: { '@type': 'ImageObject', url: new URL('/img/logo-hisense.png', site.url).href } },
+  inLanguage: 'cs-CZ',
+  keywords: d.keywords.join(', '),
+};
+const featured = series.slice(0, 3);
+---
+<Base
+  title={d.title}
+  description={d.description}
+  ogType="article"
+  ogImage={isPhoto(img) ? img : undefined}
+  schema={[articleSchema]}
+  crumbs={[{ name: 'Poradna', href: '/blog/' }, { name: d.h1 ?? d.title, href: `/blog/${post.id}/` }]}
+>
+  <article class="wrap art">
+    <header class="art__head">
+      <p class="art__meta"><a href={`/blog/#${d.category}`}>{catNames[d.category]}</a><span>{readingTime(post.body)} min čtení</span><span>Aktualizováno {fmtDate(d.updated ?? d.published)}</span></p>
+      <h1>{d.h1 ?? d.title}</h1>
+      <p class="lead">{d.perex}</p>
+    </header>
+    <div class:list={['art__hero', { 'is-product': !isPhoto(img) }]}><img src={img} alt="" width="1200" height="520" /></div>
+    <div class="art__grid">
+      <div class="art__body">
+        {toc.length > 3 && (
+          <nav class="toc" aria-label="Obsah článku">
+            <p class="toc__h">Obsah článku</p>
+            <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+          </nav>
+        )}
+        <div class="prose"><Content /></div>
+        {d.faq.length > 0 && <div class="art__faq"><Faq items={d.faq} /></div>}
+      </div>
+      <aside class="art__side">
+        <div class="art__sticky">
+          <div class="side-cta">
+            <p class="side-cta__h">Chcete nezávaznou nabídku?</p>
+            <p>Ozveme se {site.responseTime} a doporučíme vhodnou klimatizaci Hisense i s montáží.</p>
+            <a class="btn btn--block" href="/poptavka/">Nezávazná poptávka</a>
+            <a class="side-cta__tel" href={site.phoneHref}>{site.phone}</a>
+          </div>
+          <div class="side-series">
+            <p class="side-series__h">Oblíbené řady</p>
+            {featured.map((s) => (
+              <a href={`/klimatizace/${s.id}/`}><img src={mainImage(s)} alt="" loading="lazy" width="900" height="330" /><span><b>{s.name}</b>{s.tagline}</span></a>
+            ))}
+          </div>
+        </div>
+      </aside>
+    </div>
+    {related.length > 0 && (
+      <section class="rel">
+        <h2>Mohlo by vás zajímat</h2>
+        <ul>{related.map((r: any) => <li><a href={`/blog/${r.id}/`}><strong>{r.data.h1 ?? r.data.title}</strong><span>{r.data.perex}</span></a></li>)}</ul>
+      </section>
+    )}
+  </article>
+  <CtaBand />
+</Base>
+<style>
+  .art { padding-block: 16px 64px; }
+  .art__head { max-width: 840px; padding: 12px 0 26px; }
+  .art__head h1 { font-size: var(--step-4); }
+  .art__meta { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: var(--step--1); color: var(--ink-2); }
+  .art__meta a { font-weight: 700; }
+  .art__hero { border-radius: var(--r-l); overflow: hidden; aspect-ratio: 21 / 8; max-width: 100%; margin-bottom: clamp(28px, 4vw, 48px); background: radial-gradient(90% 120% at 50% 0%, #fff, var(--teal-soft)); display: grid; place-items: center; }
+  .art__hero img { width: 100%; height: 100%; object-fit: cover; }
+  .art__hero.is-product img { width: auto; height: auto; max-width: 60%; max-height: 70%; object-fit: contain; filter: drop-shadow(0 22px 24px rgba(0, 40, 50, 0.2)); }
+  .art__grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .art__sticky { position: sticky; top: 96px; display: grid; gap: 16px; }
+  .toc { background: var(--teal-tint); border-radius: var(--r); padding: 18px 22px; margin-bottom: 28px; max-width: 72ch; }
+  .toc__h { font: 800 1rem var(--f-display); margin: 0 0 6px; }
+  .toc ol { margin: 0; padding-left: 1.2em; }
+  .toc li { margin: 4px 0; }
+  .art__faq { margin-top: 48px; }
+  .art__faq :global(h2) { font-size: var(--step-2); }
+  .side-cta { background: linear-gradient(160deg, var(--teal), var(--teal-dark)); color: #fff; border-radius: var(--r-l); padding: 22px; }
+  .side-cta__h { font: 800 1.2rem var(--f-display); margin-bottom: 6px; }
+  .side-cta p { font-size: 0.93rem; color: #e2f7f6; }
+  .side-cta .btn { background: #fff; border-color: #fff; color: var(--teal-ink); }
+  .side-cta__tel { display: block; text-align: center; margin-top: 10px; color: #fff; font: 700 1rem var(--f-display); }
+  .side-series { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: 16px; display: grid; gap: 8px; }
+  .side-series__h { font: 800 0.8rem var(--f-display); text-transform: uppercase; letter-spacing: 0.12em; color: var(--teal-ink); margin: 0 0 4px; }
+  .side-series a { display: grid; grid-template-columns: 90px 1fr; gap: 12px; align-items: center; text-decoration: none; color: var(--ink-2); font-size: 0.82rem; padding: 6px; border-radius: 10px; }
+  .side-series a:hover { background: var(--teal-tint); }
+  .side-series img { width: 90px; height: auto; }
+  .side-series b { display: block; font: 800 0.98rem var(--f-display); color: var(--ink); }
+  .rel { margin-top: 56px; border-top: 2px solid var(--teal); padding-top: 24px; }
+  .rel h2 { font-size: var(--step-2); }
+  .rel ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .rel a { text-decoration: none; display: grid; gap: 6px; color: var(--ink); }
+  .rel a:hover strong { color: var(--teal-ink); }
+  .rel strong { font-family: var(--f-display); font-size: 1.05rem; }
+  .rel span { color: var(--ink-2); font-size: var(--step--1); }
+  .art__body { min-width: 0; }
+  @media (max-width: 980px) { .art__grid { grid-template-columns: minmax(0, 1fr); } .art__sticky { position: static; } .rel ul { grid-template-columns: 1fr; } .art__hero { aspect-ratio: 16 / 9; } }
+</style>

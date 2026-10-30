@@ -1,0 +1,31 @@
+---
+interface Props { items: { q: string; a: string }[]; heading?: string; schema?: boolean }
+const { items, heading = 'Časté dotazy', schema = true } = Astro.props;
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((i) => ({ '@type': 'Question', name: i.q, acceptedAnswer: { '@type': 'Answer', text: i.a } })),
+};
+---
+<div class="faq">
+  {heading && <h2>{heading}</h2>}
+  {items.map((i) => (
+    <details>
+      <summary>{i.q}</summary>
+      <p>{i.a}</p>
+    </details>
+  ))}
+</div>
+{schema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
+
+<style>
+  .faq { display: grid; gap: 10px; max-width: 880px; }
+  .faq h2 { margin-bottom: 0.5em; }
+  details { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 0 20px; transition: border-color 0.2s; }
+  details[open] { border-color: var(--teal); }
+  summary { cursor: pointer; list-style: none; padding: 18px 0; font: 700 1.04rem var(--f-display); display: flex; justify-content: space-between; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; color: var(--teal); font-size: 1.5rem; line-height: 1; flex: none; transition: transform 0.2s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { padding-bottom: 18px; margin: 0; color: var(--ink-2); max-width: 72ch; }
+</style>

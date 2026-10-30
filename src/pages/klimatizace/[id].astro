@@ -1,0 +1,215 @@
+---
+import Base from '../../layouts/Base.astro';
+import FeatureGrid from '../../components/FeatureGrid.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { series, colors, useLabels, mainImage, type Series } from '../../data/products';
+import { site } from '../../data/site';
+
+export function getStaticPaths() {
+  return series.map((s) => ({ params: { id: s.id }, props: { s } }));
+}
+const { s } = Astro.props as { s: Series };
+const colorKeys = (Object.keys(s.images) as ('bila' | 'cerna')[]).filter((k) => s.images[k]);
+const others = series.filter((o) => o.id !== s.id);
+const url = new URL(`/klimatizace/${s.id}/`, site.url).href;
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProductGroup',
+  name: `Klimatizace Hisense ${s.name}`,
+  description: s.intro,
+  brand: { '@type': 'Brand', name: 'Hisense' },
+  url,
+  image: new URL(mainImage(s), site.url).href,
+  productGroupID: s.id,
+  hasVariant: s.models.map((m) => ({
+    '@type': 'Product',
+    name: `Hisense ${s.name} ${m.code}`,
+    sku: m.code,
+    brand: { '@type': 'Brand', name: 'Hisense' },
+    ...(m.color ? { color: colors[m.color].name } : {}),
+    additionalProperty: [
+      { '@type': 'PropertyValue', name: 'Výkon chlazení / topení', value: `${m.kw} kW` },
+      { '@type': 'PropertyValue', name: 'Energetická třída chlazení / topení', value: m.cls },
+    ],
+  })),
+};
+---
+<Base
+  title={s.seoTitle}
+  description={s.seoDescription}
+  ogImage={mainImage(s)}
+  crumbs={[{ name: 'Klimatizace', href: '/klimatizace/' }, { name: s.name, href: `/klimatizace/${s.id}/` }]}
+  schema={[productSchema]}
+>
+  <section class="pd">
+    <div class="wrap pd__in">
+      <div class="pd__txt">
+        <span class="eyebrow">Nástěnná klimatizace Hisense</span>
+        <h1>Hisense {s.name}</h1>
+        <p class="pd__tagline">{s.tagline}</p>
+        <p class="lead">{s.intro}</p>
+        <dl class="pd__stats">
+          {s.stats.map((st) => <div><dt>{st.label}</dt><dd class="num">{st.value}</dd></div>)}
+        </dl>
+        <p class="pd__uses">{s.uses.map((u) => <span class="chip">{useLabels[u]}</span>)}</p>
+        <div class="btns">
+          <a class="btn" href={`/poptavka/?rada=${s.id}`}>Poptat {s.name}</a>
+          <a class="btn btn--ghost" href="#modely">Modely a parametry</a>
+        </div>
+      </div>
+      <div class="pd__visual">
+        <div class="pd__stage"><img id="pd-img" src={mainImage(s)} alt={`Klimatizace Hisense ${s.name}`} width="900" height="330" /></div>
+        {colorKeys.length > 1 && (
+          <div class="pd__colors" role="group" aria-label="Barevné provedení">
+            {colorKeys.map((c, i) => (
+              <button type="button" data-src={s.images[c]} aria-pressed={i === 0 ? 'true' : 'false'}><i style={`background:${colors[c].hex}`}></i>{colors[c].name}</button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head"><span class="eyebrow">Proč {s.name}</span><h2>Hlavní přednosti</h2></div>
+      <div class="ben">
+        {s.benefits.map((b, i) => (
+          <article class="ben__item" data-reveal>
+            <span class="ben__n num">0{i + 1}</span>
+            <h3>{b.title}</h3>
+            <p>{b.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="wrap">
+      <div class="head"><span class="eyebrow">Výbava</span><h2>Chytré funkce řady {s.name}</h2></div>
+      <FeatureGrid ids={s.functions} />
+      <p class="more-link"><a href="/chytre-funkce/#srovnani">Porovnat funkce všech řad →</a></p>
+    </div>
+  </section>
+
+  <section class="section" id="modely">
+    <div class="wrap">
+      <div class="head"><span class="eyebrow">Modely</span><h2>Výkony a provedení</h2></div>
+      <div class="models">
+        {s.models.map((m) => (
+          <div class="model">
+            <div>
+              <p class="model__kw num">{m.kw.split(' /')[0]} <small>kW</small></p>
+              <p class="model__room">{m.room}</p>
+            </div>
+            <dl>
+              <div><dt>Model</dt><dd>{m.code}</dd></div>
+              {m.color && <div><dt>Barva</dt><dd>{colors[m.color].name}</dd></div>}
+              <div><dt>Chlazení / topení</dt><dd class="num">{m.kw} kW</dd></div>
+              <div><dt>Energetická třída</dt><dd>{m.cls}</dd></div>
+            </dl>
+            <a class="btn btn--sm btn--ghost" href={`/poptavka/?rada=${s.id}`}>Poptat</a>
+          </div>
+        ))}
+      </div>
+      <p class="small muted">Velikost místnosti je orientační, přesný výkon doporučí technik při obhlídce. Součástí je bezdrátový dálkový ovladač.</p>
+
+      <details class="spec">
+        <summary>Technické parametry <span>datasheet</span></summary>
+        <div class="tbl">
+          <table>
+            <thead><tr><th scope="col">Parametr</th>{s.spec.cols.map((c) => <th scope="col" class="c">{c}</th>)}</tr></thead>
+            <tbody>{s.spec.rows.map((r) => <tr><th scope="row">{r[0]}</th>{r.slice(1).map((v) => <td class="c num">{v}</td>)}</tr>)}</tbody>
+          </table>
+        </div>
+        <p class="small muted">Chladivo R32 (GWP 675). Údaje podle katalogu Hisense 2026/2027, změna vyhrazena. * Hodnota v tichém režimu QUIET.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="head"><span class="eyebrow">Další řady</span><h2>Porovnejte s ostatními</h2></div>
+      <div class="others">
+        {others.map((o) => (
+          <a href={`/klimatizace/${o.id}/`}>
+            <span class="others__img"><img src={mainImage(o)} alt="" loading="lazy" width="900" height="330" /></span>
+            <b>{o.name}</b><span>{o.tagline}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand heading={`Chcete Hisense ${s.name} i s montáží?`} />
+</Base>
+
+<script is:inline>
+  (function () {
+    var img = document.getElementById('pd-img');
+    document.querySelectorAll('.pd__colors button').forEach(function (b, _, all) {
+      b.addEventListener('click', function () { img.src = b.dataset.src; all.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); });
+    });
+  })();
+</script>
+
+<style>
+  .pd { background: radial-gradient(70% 90% at 85% 10%, var(--teal-soft), transparent 60%), linear-gradient(180deg, var(--bg-2), #fff); border-bottom: 1px solid var(--line); }
+  .pd__in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(28px, 5vw, 64px); align-items: center; padding-block: 28px clamp(48px, 6vw, 80px); }
+  .pd h1 { margin-bottom: 0.15em; }
+  .pd__tagline { font: 700 var(--step-1) var(--f-display); color: var(--teal-ink); }
+  .pd__stats { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 460px; margin: 6px 0 16px; border: 1px solid var(--line); border-radius: var(--r); background: #fff; overflow: hidden; }
+  .pd__stats div { padding: 10px 12px; }
+  .pd__stats div + div { border-left: 1px solid var(--line); }
+  .pd__stats dt { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); }
+  .pd__stats dd { margin: 0; font: 800 1.15rem var(--f-display); white-space: nowrap; }
+  .pd__uses { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+  .pd__stage { background: #fff; border: 1px solid var(--line); border-radius: 24px; min-height: 300px; display: grid; place-items: center; padding: clamp(24px, 4vw, 48px); box-shadow: var(--shadow); }
+  .pd__stage img { max-height: 240px; width: auto; filter: drop-shadow(0 22px 22px rgba(0, 40, 50, 0.18)); }
+  .pd__colors { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+  .pd__colors button { display: flex; align-items: center; gap: 8px; font: 600 0.9rem var(--f-display); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px 6px 6px; cursor: pointer; min-height: 40px; }
+  .pd__colors button[aria-pressed='true'] { border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal); }
+  .pd__colors i { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #c9d4d7; }
+  @media (max-width: 900px) { .pd__in { grid-template-columns: 1fr; } .pd__visual { order: -1; } .pd__stage { min-height: 200px; } .pd__stage img { max-height: 160px; } }
+
+  .ben { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+  .ben__item { border-top: 3px solid var(--teal); padding-top: 18px; }
+  .ben__n { font: 800 0.9rem var(--f-display); color: var(--teal); letter-spacing: 0.08em; }
+  .ben h3 { margin-top: 8px; }
+  .ben p { color: var(--ink-2); font-size: 0.95rem; margin: 0; }
+  @media (max-width: 1024px) { .ben { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .ben { grid-template-columns: 1fr; } }
+  .more-link { margin: 22px 0 0; font: 700 1rem var(--f-display); }
+
+  .models { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; margin-bottom: 14px; }
+  .model { display: flex; flex-direction: column; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 20px; }
+  .model__kw { font: 800 2rem/1 var(--f-display); margin: 0; color: var(--ink); }
+  .model__kw small { font-size: 0.5em; }
+  .model__room { margin: 4px 0 0; color: var(--teal-ink); font-weight: 600; font-size: 0.92rem; }
+  .model dl { margin: 0; display: grid; gap: 4px; font-size: 0.88rem; }
+  .model dl div { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dashed var(--line); padding-bottom: 4px; }
+  .model dt { color: var(--ink-3); }
+  .model dd { margin: 0; font-weight: 600; text-align: right; }
+  .model .btn { align-self: flex-start; margin-top: auto; }
+
+  .spec { margin-top: 28px; border: 1px solid var(--line); border-radius: var(--r); background: #fff; padding: 0 18px; }
+  .spec summary { cursor: pointer; list-style: none; padding: 18px 0; font: 800 1.15rem var(--f-display); display: flex; align-items: center; gap: 10px; }
+  .spec summary::-webkit-details-marker { display: none; }
+  .spec summary span { font: 600 0.72rem var(--f-display); text-transform: uppercase; letter-spacing: 0.1em; color: var(--teal-ink); background: var(--teal-soft); border-radius: 999px; padding: 3px 10px; }
+  .spec summary::after { content: '+'; margin-left: auto; color: var(--teal); font-size: 1.6rem; line-height: 1; transition: transform 0.2s; }
+  .spec[open] summary::after { transform: rotate(45deg); }
+  .spec .tbl { margin-bottom: 12px; }
+  .spec table { min-width: 560px; }
+  .spec tbody th { font-weight: 500; color: var(--ink-2); }
+  .spec td { white-space: nowrap; }
+
+  .others { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  .others a { display: grid; gap: 4px; text-decoration: none; background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 16px; transition: border-color 0.2s; }
+  .others a:hover { border-color: var(--teal); }
+  .others__img { height: 70px; display: grid; place-items: center; margin-bottom: 6px; }
+  .others img { max-height: 62px; width: auto; }
+  .others b { font: 800 1.05rem var(--f-display); color: var(--ink); }
+  .others span:last-child { font-size: 0.85rem; color: var(--ink-2); }
+  @media (max-width: 900px) { .others { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>

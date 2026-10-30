@@ -1,0 +1,41 @@
+---
+import { features, type Feature } from '../data/features';
+interface Props { ids?: string[]; detailed?: boolean; dark?: boolean }
+const { ids, detailed = false, dark = false } = Astro.props;
+const list: Feature[] = ids ? ids.map((id) => features.find((f) => f.id === id)!).filter(Boolean) : features;
+---
+<ul class:list={['fg', { 'fg--detail': detailed, 'fg--dark': dark }]}>
+  {list.map((f) => (
+    <li class="fg__item" id={detailed ? `funkce-${f.id}` : undefined} data-reveal>
+      <span class="fg__icon"><img src={f.icon} alt="" width="64" height="64" loading="lazy" /></span>
+      <div>
+        <h3>{f.name}</h3>
+        <p class="fg__short">{f.short}</p>
+        {detailed && <p class="fg__text">{f.text}</p>}
+      </div>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .fg { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .fg__item { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: start; background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 16px; transition: border-color 0.2s, box-shadow 0.2s; }
+  .fg__item:hover { border-color: var(--teal); box-shadow: 0 10px 26px -18px rgba(0, 100, 100, 0.6); }
+  .fg__icon { width: 64px; height: 64px; display: grid; place-items: center; background: #fff; border-radius: 10px; }
+  .fg__icon img { width: 60px; height: 60px; object-fit: contain; }
+  .fg h3 { font-size: 1.02rem; margin: 2px 0 2px; }
+  .fg__short { font-size: 0.88rem; color: var(--ink-2); margin: 0; line-height: 1.4; }
+  .fg__text { font-size: 0.92rem; color: var(--ink-2); margin: 8px 0 0; }
+  .fg--detail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .fg--detail .fg__item { padding: 22px; grid-template-columns: 76px 1fr; }
+  .fg--detail .fg__icon { width: 76px; height: 76px; }
+  .fg--detail .fg__icon img { width: 72px; height: 72px; }
+  .fg--detail h3 { font-size: 1.15rem; }
+  .fg--detail .fg__short { color: var(--teal-ink); font-weight: 600; }
+  .fg--dark .fg__item { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.12); }
+  .fg--dark h3 { color: #fff; }
+  .fg--dark .fg__short { color: #b9cbd2; }
+  @media (max-width: 1024px) { .fg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 760px) { .fg--detail { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .fg:not(.fg--detail) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .fg:not(.fg--detail) .fg__item { grid-template-columns: 1fr; padding: 14px; gap: 8px; } .fg:not(.fg--detail) .fg__icon { width: 52px; height: 52px; } .fg:not(.fg--detail) .fg__icon img { width: 50px; height: 50px; } .fg--detail .fg__item { grid-template-columns: 60px 1fr; padding: 16px; } .fg--detail .fg__icon, .fg--detail .fg__icon img { width: 60px; height: 60px; } }
+</style>

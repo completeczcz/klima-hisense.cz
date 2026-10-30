@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dekujeme/
+
+Sitemap: https://klima-hisense.cz/sitemap-index.xml

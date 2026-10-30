@@ -1,0 +1,20 @@
+{
+  "name": "klima-hisense",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "@fontsource-variable/red-hat-display": "^5.2.0",
+    "@fontsource-variable/red-hat-text": "^5.2.0",
+    "astro": "7.4.4"
+  },
+  "devDependencies": {
+    "wrangler": "^4.156.0"
+  }
+}

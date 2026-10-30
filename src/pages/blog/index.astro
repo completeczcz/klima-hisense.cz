@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { getCollection } from 'astro:content';
+import { catNames, readingTime, postImage, isPhoto } from '../../data/blog';
+const posts = (await getCollection('blog')).sort((a, b) => +b.data.published - +a.data.published || a.id.localeCompare(b.id));
+const cats = Object.entries(catNames);
+---
+<Base
+  title="Poradna – vše o klimatizacích Hisense"
+  description="Poradna Klima Hisense: jak vybrat klimatizaci, jaký výkon zvolit, topení klimatizací, chytré funkce, montáž a údržba. Srozumitelné návody od odborníků."
+  crumbs={[{ name: 'Poradna', href: '/blog/' }]}
+>
+  <section class="section" style="padding-top:28px">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Poradna</span>
+        <h1>Vše, co potřebujete vědět o klimatizaci</h1>
+        <p class="lead">Návody a vysvětlení bez zbytečné techniky. Jak vybrat, jaký výkon zvolit, co umí chytré funkce a jak probíhá montáž.</p>
+      </div>
+      {cats.map(([key, name]) => {
+        const list = posts.filter((p) => p.data.category === key);
+        return list.length > 0 && (
+          <section class="bl-cat" id={key}>
+            <h2>{name}</h2>
+            <div class="bl-grid">
+              {list.map((p) => {
+                const img = postImage(p.id);
+                return (
+                  <a class="bl-card" href={`/blog/${p.id}/`} data-reveal>
+                    <span class:list={['bl-card__img', { 'is-product': !isPhoto(img) }]}><img src={img} alt="" loading="lazy" width="600" height="340" /></span>
+                    <span class="bl-card__body">
+                      <span class="bl-card__meta">{readingTime(p.body)} min čtení</span>
+                      <b>{p.data.h1 ?? p.data.title}</b>
+                      <span class="bl-card__perex">{p.data.perex}</span>
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  </section>
+  <CtaBand />
+</Base>
+<style>
+  .bl-cat { margin-top: 40px; scroll-margin-top: 96px; }
+  .bl-cat h2 { font-size: var(--step-2); padding-bottom: 10px; border-bottom: 2px solid var(--teal); margin-bottom: 20px; }
+  .bl-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .bl-card { display: flex; flex-direction: column; text-decoration: none; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
+  .bl-card:hover { border-color: var(--teal); box-shadow: var(--shadow); transform: translateY(-3px); }
+  .bl-card__img { aspect-ratio: 16 / 9; max-width: 100%; overflow: hidden; background: var(--teal-tint); display: grid; place-items: center; }
+  .bl-card__img img { width: 100%; height: 100%; object-fit: cover; }
+  .bl-card__img.is-product img { width: auto; height: auto; max-width: 78%; max-height: 62%; object-fit: contain; }
+  .bl-card__body { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px 22px; }
+  .bl-card__meta { font-size: 0.78rem; color: var(--ink-3); }
+  .bl-card b { font: 800 1.12rem/1.25 var(--f-display); }
+  .bl-card__perex { color: var(--ink-2); font-size: 0.92rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  @media (max-width: 1024px) { .bl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .bl-grid { grid-template-columns: 1fr; } }
+</style>

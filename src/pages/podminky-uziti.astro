@@ -1,0 +1,19 @@
+---
+import Legal from '../layouts/Legal.astro';
+import { site } from '../data/site';
+const c = site.company;
+---
+<Legal title="Podmínky užití webu" description="Podmínky užití webu klima-hisense.cz, povaha informací o klimatizacích Hisense a vyřizování poptávek." h1="Podmínky užití webu" slug="podminky-uziti" updated="1. 11. 2026">
+  <h2>Provozovatel</h2>
+  <p>Web klima-hisense.cz provozuje {c.name}, IČO {c.ico}, se sídlem {c.address}, oficiální zastoupení Hisense pro Českou republiku.</p>
+  <h2>Povaha služby</h2>
+  <p>Provozovatel přijímá poptávky na dodávku a montáž klimatizací Hisense, poskytuje základní poradenství a montáž zajišťuje prostřednictvím partnerských montážních firem. Odeslání poptávky je bezplatné a nezávazné. Podmínky dodávky a montáže včetně ceny jsou vždy uvedeny v nabídce.</p>
+  <h2>Informace na webu</h2>
+  <p>Technické parametry, energetické třídy a popisy funkcí vycházejí z podkladů výrobce Hisense a mohou se změnit. Výsledek kalkulačky výkonu je orientační a nenahrazuje posouzení technikem. Fotografie mají ilustrační charakter.</p>
+  <h2>Obsah poradny</h2>
+  <p>Články mají informativní charakter a nenahrazují individuální posouzení odborníkem. Informace o právních předpisech odpovídají stavu ke dni aktualizace článku.</p>
+  <h2>Ochranné známky</h2>
+  <p>Hisense a názvy produktových řad jsou ochranné známky Hisense Group a jsou na webu použity se souhlasem výrobce k označení nabízených výrobků. ConnectLife, Google a Amazon Alexa jsou ochranné známky svých vlastníků.</p>
+  <h2>Kontakt</h2>
+  <p><a href={`mailto:${site.email}`}>{site.email}</a>, {site.phone}</p>
+</Legal>

@@ -1,0 +1,174 @@
+---
+import Base from '../layouts/Base.astro';
+import SeriesFilter from '../components/SeriesFilter.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import AppShowcase from '../components/AppShowcase.astro';
+import Sizer from '../components/Sizer.astro';
+import Steps from '../components/Steps.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../data/site';
+import { getCollection } from 'astro:content';
+import { faqHome } from '../data/faq';
+
+const pick = ['jak-vybrat-klimatizaci-do-bytu', 'topeni-klimatizaci', 'chytra-klimatizace-aplikace-connectlife'];
+const all = await getCollection('blog');
+const posts = pick.map((id) => all.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => Boolean(p));
+---
+<Base
+  title="Klimatizace Hisense s montáží po celé ČR"
+  description="Klimatizace Hisense od oficiálního zastoupení pro ČR. Chytré řady Air Master, Energy Pro X, Uni Pure, Wings Comfort a Hi-Smart s montáží. Poptávka zdarma."
+>
+  <section class="hero">
+    <picture class="hero__bg"><img src="/img/hero-loznice.jpg" alt="Moderní ložnice s klimatizací Hisense" width="1800" height="1013" fetchpriority="high" /></picture>
+    <div class="wrap hero__in">
+      <div class="hero__txt">
+        <span class="eyebrow">{site.claim}</span>
+        <h1>Chytrá klimatizace <em>Hisense</em> pro váš domov</h1>
+        <p class="lead">Chladí v létě, topí v zimě a ovládáte ji z telefonu. Vyberte si řadu, pošlete nezávaznou poptávku a montáž zajistíme po celé ČR.</p>
+        <div class="btns">
+          <a class="btn" href="/poptavka/">Nezávazná poptávka</a>
+          <a class="btn btn--ghost hero__ghost" href="/klimatizace/">Prohlédnout řady</a>
+        </div>
+        <ul class="hero__facts">
+          <li><b>A+++</b><span>energetická třída</span></li>
+          <li><b>18 dB(A)</b><span>tichý provoz od</span></li>
+          <li><b>−22 °C</b><span>topí i v mrazu</span></li>
+          <li><b>3 roky</b><span>záruka</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="rady">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Nástěnné klimatizace Hisense</span>
+        <h2>Vyberte si podle toho, kde ji budete mít</h2>
+        <p class="lead">Pět řad, které chladí i topí. Od chytré novinky Air Master s inteligentním okem po jednoduchou Hi‑Smart.</p>
+      </div>
+      <SeriesFilter />
+    </div>
+  </section>
+
+  <section class="section section--tint" id="funkce">
+    <div class="wrap">
+      <div class="head head--center">
+        <span class="eyebrow">Chytré funkce</span>
+        <h2>Klimatizace, která myslí za vás</h2>
+        <p class="lead">Pozná, kde sedíte, sama vybere nejlepší režim, čistí vzduch a hlídá spotřebu. Stačí jí říct, co chcete.</p>
+      </div>
+      <FeatureGrid ids={['smart-eye', 'ai-smart', 'wifi', 'hlasove-ovladani', 'i-feel', 'super', 'hi-nano', 'celorocni-provoz']} />
+      <p class="center"><a class="btn btn--ghost" href="/chytre-funkce/">Všechny funkce a srovnání řad</a></p>
+    </div>
+  </section>
+
+  <AppShowcase />
+
+  <section class="section" id="vykon">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Výpočet výkonu</span>
+        <h2>Jak výkonnou klimatizaci potřebujete?</h2>
+        <p class="lead">Nastavte velikost místnosti a hned uvidíte doporučený výkon i řady, které ho nabízejí.</p>
+      </div>
+      <Sizer />
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap split">
+      <div class="photo why__photo" data-reveal><img src="/img/interier-zima.jpg" alt="Útulný obývací pokoj vytápěný klimatizací Hisense v zimě" width="1200" height="1049" loading="lazy" /></div>
+      <div data-reveal>
+        <span class="eyebrow">Proč u nás</span>
+        <h2>Hisense přímo od oficiálního zastoupení</h2>
+        <p class="lead">Web provozuje {site.company.name}, oficiální zastoupení Hisense pro Českou republiku. V chlazení a klimatizaci působíme přes 23 let.</p>
+        <ul class="ticks">
+          <li>Originální jednotky s plnou zárukou výrobce a servisem v ČR</li>
+          <li>Montáž prověřenými partnery z vašeho regionu</li>
+          <li>Náhradní díly a technická podpora přímo od zastoupení</li>
+          <li>Poradíme s výběrem i s řešením pro více místností</li>
+        </ul>
+        <dl class="why__stats">
+          <div><dt>23+ let</dt><dd>praxe v oboru</dd></div>
+          <div><dt>3 roky</dt><dd>záruka</dd></div>
+          <div><dt>1 den</dt><dd>odpověď na poptávku</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="postup">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Jak to probíhá</span>
+        <h2>Od poptávky k chladnému pokoji</h2>
+      </div>
+      <Steps />
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="head blog-head">
+        <div><span class="eyebrow">Poradna</span><h2>Než si vyberete</h2></div>
+        <a class="btn btn--ghost btn--sm" href="/blog/">Všechny články</a>
+      </div>
+      <div class="grid grid--3">
+        {posts.map((p) => (
+          <a class="post card" href={`/blog/${p.id}/`} data-reveal>
+            <span class="eyebrow">{p.data.category === 'chytre-funkce' ? 'Chytré funkce' : p.data.category === 'montaz-a-provoz' ? 'Montáž a provoz' : 'Výběr klimatizace'}</span>
+            <h3>{p.data.h1 ?? p.data.title}</h3>
+            <p>{p.data.perex}</p>
+            <span class="post__more">Číst článek →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap"><Faq items={faqHome} /></div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .hero { position: relative; overflow: hidden; background: var(--teal-tint); }
+  .hero__bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 72% 40%; }
+  .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.9) 36%, rgba(255, 255, 255, 0.15) 64%, rgba(255, 255, 255, 0) 80%); }
+  .hero__in { position: relative; z-index: 1; padding-block: clamp(64px, 9vw, 120px); }
+  .hero__txt { max-width: 590px; }
+  .hero h1 em { font-style: normal; color: var(--teal); }
+  .hero .lead { margin-bottom: 1.6em; }
+  .hero__ghost { background: rgba(255, 255, 255, 0.75); }
+  .hero__facts { list-style: none; padding: 0; margin: 34px 0 0; display: grid; grid-template-columns: repeat(4, auto); gap: 8px 28px; justify-content: start; }
+  .hero__facts li { display: grid; }
+  .hero__facts b { font: 800 1.35rem var(--f-display); color: var(--ink); }
+  .hero__facts span { font-size: 0.8rem; color: var(--ink-2); }
+  @media (max-width: 900px) {
+    .hero::after { background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 58%, rgba(255, 255, 255, 0.4) 100%); }
+    .hero__in { padding-bottom: 200px; }
+    .hero__bg img { object-position: 78% 100%; }
+  }
+  @media (max-width: 560px) {
+    .hero__facts { grid-template-columns: repeat(2, auto); gap: 12px 30px; }
+    .hero .btns .btn { flex: 1 1 100%; }
+    .hero__in { padding-bottom: 150px; }
+  }
+  .center { text-align: center; margin: 32px 0 0; }
+  .why__photo { aspect-ratio: 8 / 7; }
+  .why__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin: 8px 0 0; }
+  .why__stats div { background: #fff; padding: 16px; }
+  .why__stats dt { font: 800 1.5rem var(--f-display); color: var(--teal-ink); }
+  .why__stats dd { margin: 0; font-size: 0.85rem; color: var(--ink-2); }
+  .blog-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; max-width: none; flex-wrap: wrap; }
+  .blog-head h2 { margin: 0; }
+  .post { display: flex; flex-direction: column; gap: 6px; padding: 24px; text-decoration: none; color: var(--ink); transition: border-color 0.2s, box-shadow 0.2s; }
+  .post:hover { border-color: var(--teal); box-shadow: var(--shadow); }
+  .post .eyebrow { margin: 0; font-size: 0.7rem; }
+  .post h3 { font-size: 1.15rem; margin: 0; }
+  .post p { color: var(--ink-2); font-size: 0.93rem; margin: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .post__more { margin-top: auto; padding-top: 8px; font: 700 0.92rem var(--f-display); color: var(--teal-ink); }
+</style>

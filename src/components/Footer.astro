@@ -1,0 +1,60 @@
+---
+import { site } from '../data/site';
+import { series } from '../data/products';
+const c = site.company;
+---
+<footer class="ftr">
+  <div class="wrap ftr__grid">
+    <div class="ftr__brand">
+      <img src="/img/logo-hisense.png" alt="Hisense" width="145" height="24" loading="lazy" />
+      <p>Klimatizace Hisense s montáží po celé České republice. {site.claim}.</p>
+      <p class="ftr__contact"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br /><span>{site.hours}</span></p>
+    </div>
+    <div>
+      <p class="ftr__h">Klimatizace</p>
+      <ul>
+        {series.map((s) => <li><a href={`/klimatizace/${s.id}/`}>Hisense {s.name}</a></li>)}
+        <li><a href="/klimatizace/">Přehled řad</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="ftr__h">Informace</p>
+      <ul>
+        <li><a href="/chytre-funkce/">Chytré funkce</a></li>
+        <li><a href="/jak-to-probiha/">Jak probíhá montáž</a></li>
+        <li><a href="/blog/">Poradna</a></li>
+        <li><a href="/caste-dotazy/">Časté dotazy</a></li>
+        <li><a href="/kontakt/">Kontakt</a></li>
+        <li><a href="/poptavka/">Nezávazná poptávka</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="ftr__h">Provozovatel</p>
+      <p>{c.name}<br />{c.address}<br />IČO {c.ico}</p>
+      <ul>
+        <li><a href="/ochrana-osobnich-udaju/">Ochrana osobních údajů</a></li>
+        <li><a href="/cookies/">Zásady cookies</a></li>
+        <li><a href="/podminky-uziti/">Podmínky užití</a></li>
+        <li><button type="button" data-open-consent>Nastavení cookies</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap ftr__legal">
+    <p>© {new Date().getFullYear()} {c.name}. Technické údaje vycházejí z podkladů výrobce, změna vyhrazena. Hisense je ochranná známka Hisense Group.</p>
+  </div>
+</footer>
+
+<style>
+  .ftr { background: var(--night); color: #b9cbd2; padding-block: 56px 28px; font-size: 0.93rem; }
+  .ftr__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.1fr; gap: 36px; }
+  .ftr img { height: 24px; width: auto; margin-bottom: 14px; }
+  .ftr__h { font: 700 0.76rem var(--f-display); letter-spacing: 0.14em; text-transform: uppercase; color: #fff; margin-bottom: 12px; }
+  .ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .ftr a, .ftr button { color: #dbe6ea; text-decoration: none; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-align: left; }
+  .ftr a:hover, .ftr button:hover { color: #fff; text-decoration: underline; }
+  .ftr__contact a { font: 700 1.02rem var(--f-display); color: #fff; }
+  .ftr__legal { border-top: 1px solid rgba(255, 255, 255, 0.12); margin-top: 36px; padding-top: 20px; font-size: 0.8rem; opacity: 0.75; }
+  .ftr__legal p { margin: 0; }
+  @media (max-width: 900px) { .ftr__grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .ftr__grid { grid-template-columns: 1fr; gap: 26px; } }
+</style>

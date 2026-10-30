@@ -1,0 +1,21 @@
+---
+import { site } from '../data/site';
+const steps = [
+  { t: 'Pošlete poptávku', p: 'Vyberte řadu nebo jen popište, co potřebujete. Zabere to dvě minuty.' },
+  { t: `Ozveme se ${site.responseTime}`, p: 'Doporučíme vhodnou řadu a výkon a domluvíme termín obhlídky.' },
+  { t: 'Obhlídka a nabídka', p: 'Montážní partner z vašeho regionu posoudí místo instalace a připraví nabídku na míru.' },
+  { t: 'Montáž a předání', p: 'Instalace jedné jednotky obvykle zabere jeden den. Ukážeme vám ovládání i aplikaci.' },
+];
+---
+<ol class="steps">
+  {steps.map((s) => <li data-reveal><h3>{s.t}</h3><p>{s.p}</p></li>)}
+</ol>
+<style>
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; counter-reset: st; }
+  .steps li { counter-increment: st; padding-top: 18px; border-top: 3px solid var(--teal); }
+  .steps li::before { content: counter(st); display: block; font: 800 1.9rem var(--f-display); color: var(--teal); margin-bottom: 6px; }
+  .steps h3 { font-size: 1.1rem; }
+  .steps p { color: var(--ink-2); font-size: 0.95rem; margin: 0; }
+  @media (max-width: 900px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .steps { grid-template-columns: 1fr; gap: 18px; } }
+</style>

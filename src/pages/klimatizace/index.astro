@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import SeriesFilter from '../../components/SeriesFilter.astro';
+import CompareTable from '../../components/CompareTable.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { series } from '../../data/products';
+import { site } from '../../data/site';
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Nástěnné klimatizace Hisense',
+  itemListElement: series.map((s, i) => ({ '@type': 'ListItem', position: i + 1, url: new URL(`/klimatizace/${s.id}/`, site.url).href, name: `Hisense ${s.name}` })),
+};
+---
+<Base
+  title="Klimatizace Hisense – přehled řad a srovnání"
+  description="Přehled nástěnných klimatizací Hisense: Air Master, Energy Pro X, Uni Pure, Wings Comfort a Hi-Smart. Srovnání funkcí, výkonů a hlučnosti. Poptávka s montáží."
+  crumbs={[{ name: 'Klimatizace', href: '/klimatizace/' }]}
+  schema={[itemList]}
+>
+  <section class="section" style="padding-top:28px">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Nástěnné klimatizace</span>
+        <h1>Klimatizace Hisense</h1>
+        <p class="lead">Všechny řady chladí i topí, pracují s chladivem R32 a invertorovým kompresorem. Liší se chytrými funkcemi, tichostí a designem. Vyberte si podle místa, kam klimatizaci chcete.</p>
+      </div>
+      <SeriesFilter />
+    </div>
+  </section>
+  <section class="section section--alt" id="srovnani">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Srovnání řad</span>
+        <h2>Co která řada umí</h2>
+        <p class="lead">Chytré funkce, čistý vzduch a celoroční provoz vedle sebe. Vysvětlení všech funkcí najdete na stránce <a href="/chytre-funkce/">Chytré funkce</a>.</p>
+      </div>
+      <CompareTable />
+    </div>
+  </section>
+  <CtaBand />
+</Base>

@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import AppShowcase from '../components/AppShowcase.astro';
+import CompareTable from '../components/CompareTable.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { features } from '../data/features';
+const groups = [
+  { id: 'chytre', title: 'Chytré ovládání', lead: 'Klimatizace, která sama pozná, co potřebujete, a kterou ovládáte telefonem nebo hlasem.' },
+  { id: 'komfort', title: 'Komfort každý den', lead: 'Rychle zchladí, drží teplotu přesně tam, kde sedíte, a v zimě topí.' },
+  { id: 'vzduch', title: 'Čistý vzduch', lead: 'Ionizace a filtry zachytí prach, pachy i část bakterií a virů ve vzduchu.' },
+] as const;
+---
+<Base
+  title="Chytré funkce klimatizací Hisense"
+  description="Smart Eye, AI Smart, aplikace ConnectLife, hlasové ovládání, ionizace Hi-NANO a další chytré funkce klimatizací Hisense. Srovnání výbavy všech řad."
+  crumbs={[{ name: 'Chytré funkce', href: '/chytre-funkce/' }]}
+>
+  <section class="fx-hero">
+    <div class="wrap fx-hero__in">
+      <div>
+        <span class="eyebrow">Technologie Hisense</span>
+        <h1>Chytré funkce, které poznáte každý den</h1>
+        <p class="lead">Klimatizace Hisense nejsou jen chladicí stroje. Vidí, kde sedíte, samy volí režim, čistí vzduch, hlídají spotřebu a poslouchají na slovo.</p>
+        <div class="btns"><a class="btn" href="#srovnani">Srovnání řad</a><a class="btn btn--ghost" href="/poptavka/">Nezávazná poptávka</a></div>
+      </div>
+      <div class="fx-hero__icons" aria-hidden="true">
+        {features.slice(0, 9).map((f, i) => <img src={f.icon} alt="" width="96" height="96" style={`--d:${i * 70}ms`} />)}
+      </div>
+    </div>
+  </section>
+
+  {groups.map((g, i) => (
+    <section class:list={['section', { 'section--alt': i % 2 === 1 }]} id={g.id}>
+      <div class="wrap">
+        <div class="head"><span class="eyebrow">{`0${i + 1}`}</span><h2>{g.title}</h2><p class="lead">{g.lead}</p></div>
+        <FeatureGrid ids={features.filter((f) => f.group === g.id).map((f) => f.id)} detailed />
+      </div>
+    </section>
+  ))}
+
+  <AppShowcase heading="Jednoduchá aplikace pro celou domácnost" />
+
+  <section class="section" id="srovnani">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Srovnání řad</span>
+        <h2>Které funkce má která řada</h2>
+        <p class="lead">Nejvíc chytrých funkcí mají Air Master a Energy Pro X. Uni Pure vyniká tichostí a čistým vzduchem, Wings Comfort filtrací a výkonem, Hi‑Smart jednoduchostí.</p>
+      </div>
+      <CompareTable />
+    </div>
+  </section>
+
+  <CtaBand heading="Vyberte si klimatizaci, která myslí za vás" />
+</Base>
+
+<style>
+  .fx-hero { background: radial-gradient(80% 120% at 90% 0%, var(--teal-soft), transparent 60%), linear-gradient(180deg, var(--bg-2), #fff); border-bottom: 1px solid var(--line); }
+  .fx-hero__in { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 40px; align-items: center; padding-block: 28px clamp(48px, 6vw, 84px); }
+  .fx-hero__icons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 380px; justify-self: center; }
+  .fx-hero__icons img { width: 100%; height: auto; background: #fff; border-radius: 16px; padding: 12px; box-shadow: 0 14px 30px -20px rgba(0, 80, 90, 0.5); animation: pop 0.6s var(--d) both; }
+  @keyframes pop { from { opacity: 0; transform: scale(0.85) translateY(10px); } to { opacity: 1; transform: none; } }
+  @media (max-width: 860px) { .fx-hero__in { grid-template-columns: 1fr; } .fx-hero__icons { max-width: 300px; justify-self: start; grid-template-columns: repeat(5, 1fr); } .fx-hero__icons img:nth-child(n+6) { display: none; } }
+</style>

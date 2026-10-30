@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import { series } from '../data/products';
+---
+<Base title="Stránka nenalezena" description="Tato stránka neexistuje. Pokračujte na přehled klimatizací Hisense nebo pošlete poptávku." noindex>
+  <section class="section">
+    <div class="wrap nf">
+      <span class="eyebrow">Chyba 404</span>
+      <h1>Tuhle stránku jsme nenašli</h1>
+      <p class="lead">Možná byla přesunuta. Zkuste některou z řad klimatizací Hisense nebo nám rovnou napište.</p>
+      <p class="btns"><a class="btn" href="/klimatizace/">Přehled klimatizací</a><a class="btn btn--ghost" href="/poptavka/">Nezávazná poptávka</a></p>
+      <ul>{series.map((s) => <li><a href={`/klimatizace/${s.id}/`}>Hisense {s.name}</a></li>)}</ul>
+    </div>
+  </section>
+</Base>
+<style>.nf ul { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0; list-style: none; margin-top: 24px; } .nf a { font-weight: 600; }</style>

@@ -1,0 +1,42 @@
+---
+import { compareOrder, compareRows, featureById } from '../data/features';
+import { getSeries } from '../data/products';
+const cols = compareOrder.map(getSeries);
+---
+<div class="tbl cmp">
+  <table>
+    <thead>
+      <tr><th scope="col">Funkce</th>{cols.map((s) => <th scope="col" class="c"><a href={`/klimatizace/${s.id}/`}>{s.name}</a></th>)}</tr>
+    </thead>
+    <tbody>
+      {compareRows.map((r) =>
+        r.length === 1 ? (
+          <tr class="grp"><td colspan={cols.length + 1}>{r[0]}</td></tr>
+        ) : (
+          <tr>
+            <th scope="row" class="cmp__f">
+              {r[2] && <img src={featureById(r[2]).icon} alt="" width="28" height="28" loading="lazy" />}
+              <span>{r[0]}</span>
+            </th>
+            {(Array.isArray(r[1]) ? r[1] : [...r[1]]).map((v) => (
+              <td class="c">
+                {v === '●' ? <span class="dot-yes" role="img" aria-label="ano"></span> : v === '○' ? <span class="opt">volitelně</span> : v === '–' ? <span class="dot-no" aria-label="ne">–</span> : <b class="num">{v}</b>}
+              </td>
+            ))}
+          </tr>
+        ),
+      )}
+    </tbody>
+  </table>
+</div>
+<p class="small muted cmp__note">Energetické třídy platí pro výkony 2,6 a 3,5 kW, u větších výkonů se mohou lišit. Údaje podle katalogu Hisense 2026/2027.</p>
+
+<style>
+  .cmp table { min-width: 760px; }
+  .cmp tbody th { font-weight: 500; text-align: left; }
+  .cmp__f { display: flex; align-items: center; gap: 10px; }
+  .cmp__f img { width: 28px; height: 28px; object-fit: contain; flex: none; }
+  .cmp tbody tr:not(.grp):hover td, .cmp tbody tr:not(.grp):hover th { background: var(--teal-tint); }
+  .cmp td b { font-family: var(--f-display); font-size: 0.86rem; white-space: nowrap; }
+  .cmp__note { margin-top: 10px; }
+</style>

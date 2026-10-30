@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+const { adsId, adsLeadLabel } = site.analytics;
+---
+<Base title="Děkujeme za poptávku" description="Poptávka klimatizace Hisense byla odeslána." noindex hideStickyCta>
+  <section class="section">
+    <div class="wrap thanks">
+      <span class="thanks__ok" aria-hidden="true">✓</span>
+      <h1>Děkujeme, poptávku máme</h1>
+      <p class="lead">Ozveme se vám {site.responseTime}. Pokud jste zadali e‑mail, poslali jsme vám potvrzení.</p>
+      <p>Mezitím si můžete prohlédnout <a href="/chytre-funkce/">chytré funkce</a> nebo si přečíst, <a href="/blog/jak-probiha-montaz-klimatizace/">jak probíhá montáž</a>.</p>
+      <p class="btns"><a class="btn" href="/">Zpět na úvod</a><a class="btn btn--ghost" href={site.phoneHref}>Zavolat {site.phone}</a></p>
+    </div>
+  </section>
+  <script is:inline define:vars={{ adsId, adsLeadLabel }}>
+    window.dataLayer = window.dataLayer || [];
+    dataLayer.push({ event: 'generate_lead' });
+    if (window.gtag) {
+      gtag('event', 'generate_lead');
+      if (adsId && adsLeadLabel) gtag('event', 'conversion', { send_to: adsId + '/' + adsLeadLabel });
+    }
+  </script>
+</Base>
+<style>
+  .thanks { max-width: 680px; text-align: center; }
+  .thanks .lead { margin-inline: auto; }
+  .thanks .btns { justify-content: center; margin-top: 24px; }
+  .thanks__ok { display: inline-grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 2.2rem; margin-bottom: 18px; }
+</style>

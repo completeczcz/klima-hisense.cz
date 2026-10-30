@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { faqAll } from '../data/faq';
+---
+<Base
+  title="Časté dotazy ke klimatizacím Hisense"
+  description="Odpovědi na časté dotazy: cena a montáž klimatizace Hisense, topení klimatizací, výkon, hlučnost, ovládání z telefonu, souhlas SVJ, údržba a záruka."
+  crumbs={[{ name: 'Časté dotazy', href: '/caste-dotazy/' }]}
+>
+  <section class="section" style="padding-top:28px">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Časté dotazy</span>
+        <h1>Na co se nás nejčastěji ptáte</h1>
+        <p class="lead">Nenašli jste odpověď? Napište nám, rádi poradíme. Podrobnější návody najdete v <a href="/blog/">poradně</a>.</p>
+      </div>
+      <Faq items={faqAll} heading="" />
+    </div>
+  </section>
+  <CtaBand />
+</Base>

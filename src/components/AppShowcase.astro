@@ -1,0 +1,68 @@
+---
+interface Props { heading?: string }
+const { heading = 'Celý domov pod kontrolou v jedné aplikaci' } = Astro.props;
+---
+<section class="section section--night app">
+  <div class="wrap app__grid">
+    <div class="app__txt" data-reveal>
+      <span class="eyebrow">Aplikace ConnectLife</span>
+      <h2>{heading}</h2>
+      <p class="lead">Klimatizaci Hisense ovládáte z telefonu odkudkoli. Cestou z práce zapnete chlazení, z dovolené zkontrolujete chatu a večer hlasem řeknete, ať ztiší provoz.</p>
+      <ul class="app__list">
+        <li><b>Ovládání odkudkoli</b><span>teplota, režim, rychlost i časovač, doma i na cestách</span></li>
+        <li><b>Statistiky spotřeby a výkonu</b><span>přehled, kolik energie klimatizace spotřebuje</span></li>
+        <li><b>Hlasové ovládání</b><span>s asistenty Google a Amazon Alexa</span></li>
+        <li><b>Chytrá diagnostika</b><span>klimatizace sama ohlásí, co potřebuje</span></li>
+        <li><b>Všechny místnosti v jednom</b><span>správa více jednotek a přehled kvality vzduchu</span></li>
+      </ul>
+    </div>
+    <div class="phone" aria-hidden="true" data-reveal>
+      <div class="phone__screen">
+        <div class="ph-top"><span>Obývací pokoj</span><span class="ph-dot"></span></div>
+        <div class="ph-dial">
+          <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" /><circle class="ph-arc" cx="100" cy="100" r="82" fill="none" stroke="#19c0bb" stroke-width="12" stroke-linecap="round" stroke-dasharray="515" stroke-dashoffset="190" transform="rotate(135 100 100)" /></svg>
+          <div class="ph-temp"><b>22</b><span>°C</span><small>Chlazení · Auto</small></div>
+        </div>
+        <div class="ph-modes"><span class="on">❄ Chlad</span><span>☀ Topení</span><span>☾ Spánek</span></div>
+        <div class="ph-row"><span>Smart Eye</span><i class="sw on"></i></div>
+        <div class="ph-row"><span>Hi‑NANO</span><i class="sw on"></i></div>
+        <div class="ph-bars"><p>Spotřeba tento týden</p><div>{[38, 55, 42, 70, 48, 30, 26].map((h) => <i style={`height:${h}%`}></i>)}</div></div>
+      </div>
+      <p class="phone__note">Ilustrace</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .app__grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: clamp(32px, 6vw, 80px); align-items: center; }
+  .app__list { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 14px; }
+  .app__list li { display: grid; gap: 2px; padding-left: 30px; position: relative; }
+  .app__list li::before { content: ''; position: absolute; left: 0; top: 5px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #19c0bb; background: radial-gradient(circle, #19c0bb 35%, transparent 40%); }
+  .app__list b { color: #fff; font-family: var(--f-display); }
+  .app__list span { color: #9fb4bc; font-size: 0.94rem; }
+  .phone { justify-self: center; width: min(300px, 82vw); }
+  .phone__screen { background: linear-gradient(170deg, #17323b, #0b171c); border: 10px solid #05090b; border-radius: 42px; padding: 26px 20px 22px; box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08); color: #fff; font-family: var(--f-display); display: grid; gap: 14px; }
+  .ph-top { display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
+  .ph-dot { width: 10px; height: 10px; border-radius: 50%; background: #19c0bb; box-shadow: 0 0 0 4px rgba(25, 192, 187, 0.25); }
+  .ph-dial { position: relative; width: 180px; height: 180px; margin: 4px auto 0; }
+  .ph-dial svg { width: 100%; height: 100%; }
+  .ph-temp { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+  .ph-temp b { font-size: 3.4rem; line-height: 1; font-weight: 800; }
+  .ph-temp span { position: absolute; top: 58px; right: 46px; font-size: 1rem; opacity: 0.8; }
+  .ph-temp small { font-size: 0.72rem; opacity: 0.7; margin-top: 4px; }
+  .ph-arc { animation: arc 3.5s ease-in-out infinite alternate; }
+  @keyframes arc { from { stroke-dashoffset: 230; } to { stroke-dashoffset: 170; } }
+  .ph-modes { display: flex; gap: 6px; }
+  .ph-modes span { flex: 1; text-align: center; font-size: 0.72rem; padding: 8px 4px; border-radius: 10px; background: rgba(255, 255, 255, 0.07); }
+  .ph-modes .on { background: #19c0bb; color: #062226; font-weight: 700; }
+  .ph-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; padding: 8px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); }
+  .sw { width: 34px; height: 20px; border-radius: 999px; background: rgba(255, 255, 255, 0.2); position: relative; }
+  .sw.on { background: #19c0bb; }
+  .sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
+  .sw.on::after { left: 17px; }
+  .ph-bars p { font-size: 0.72rem; opacity: 0.7; margin: 0 0 6px; }
+  .ph-bars div { display: flex; align-items: flex-end; gap: 6px; height: 54px; }
+  .ph-bars i { flex: 1; background: linear-gradient(#19c0bb, #0f6f6c); border-radius: 4px 4px 2px 2px; }
+  .phone__note { text-align: center; font-size: 0.72rem; color: #6f868e; margin: 10px 0 0; }
+  @media (max-width: 860px) { .app__grid { grid-template-columns: 1fr; } }
+</style>

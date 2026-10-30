@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import Steps from '../components/Steps.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Faq from '../components/Faq.astro';
+import { site } from '../data/site';
+const faq = [
+  { q: 'Musím být u obhlídky doma?', a: 'Ano, technik potřebuje vidět místo pro vnitřní i venkovní jednotku a cestu potrubí. Obhlídka obvykle trvá do hodiny.' },
+  { q: 'Bude montáž dělat hodně nepořádku?', a: 'Vrtá se hlavně prostup zdí pro potrubí. Montážní firma prostor zakryje a po sobě uklidí.' },
+  { q: 'Kdo zajišťuje servis po montáži?', a: 'Servis a pravidelnou údržbu zajišťuje montážní partner. Náhradní díly a technickou podporu dodáváme jako oficiální zastoupení Hisense.' },
+];
+---
+<Base
+  title="Jak probíhá montáž klimatizace Hisense"
+  description="Od poptávky po hotovou klimatizaci: ozveme se do 1 pracovního dne, obhlídka, nabídka a montáž prověřeným partnerem obvykle za jeden den. Po celé ČR."
+  crumbs={[{ name: 'Jak to probíhá', href: '/jak-to-probiha/' }]}
+>
+  <section class="section" style="padding-top:28px">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Montáž po celé ČR</span>
+        <h1>Jak probíhá montáž klimatizace</h1>
+        <p class="lead">O nic se nemusíte starat. Poptávku vyřídíme, doporučíme vhodnou řadu a montáž zajistí prověřený partner z vašeho regionu.</p>
+      </div>
+      <Steps />
+    </div>
+  </section>
+  <section class="section section--alt">
+    <div class="wrap split">
+      <div>
+        <h2>Co obnáší instalace</h2>
+        <ul class="ticks">
+          <li>Vnitřní jednotka se zavěsí na zeď, obvykle nad dveře nebo naproti oknu.</li>
+          <li>Venkovní jednotka jde na fasádu, balkon, terasu nebo střechu.</li>
+          <li>Obě jednotky propojí izolované měděné potrubí a kabel přes jeden prostup zdí.</li>
+          <li>Kondenzát se odvede samospádem nebo čerpadlem.</li>
+          <li>Technik okruh odvakuuje, natlakuje, spustí a předá vám jednotku i aplikaci.</li>
+        </ul>
+        <p class="muted">Práci s chladivem smí provádět jen certifikovaný technik. U bytových domů je obvykle potřeba souhlas SVJ s umístěním venkovní jednotky, poradíme vám s ním.</p>
+      </div>
+      <div class="photo" style="aspect-ratio:4/3"><img src="/img/interier-lampa.jpg" alt="Nainstalovaná nástěnná klimatizace Hisense" width="1400" height="522" loading="lazy" /></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap"><Faq items={faq} heading="Dotazy k montáži" /></div>
+  </section>
+  <CtaBand heading="Domluvíme obhlídku" text={`Pošlete poptávku a ozveme se ${site.responseTime}.`} />
+</Base>

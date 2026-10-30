@@ -1,0 +1,98 @@
+---
+import { series } from '../data/products';
+// Pro výpočet: výkony modelů každé řady (chladicí kW)
+const caps = series.map((s) => ({ id: s.id, name: s.name, kws: [...new Set(s.models.map((m) => parseFloat(m.kw.split(' /')[0].replace(',', '.'))))] }));
+---
+<div class="sz" data-caps={JSON.stringify(caps)}>
+  <div class="sz__panel">
+    <div class="field">
+      <label for="sz-area">Plocha místnosti</label>
+      <div class="sz__range"><input type="range" id="sz-area" min="8" max="70" step="1" value="25" /><output class="num" id="sz-area-o">25 m²</output></div>
+    </div>
+    <div class="field">
+      <label for="sz-h">Výška stropu</label>
+      <div class="sz__range"><input type="range" id="sz-h" min="2.4" max="4" step="0.1" value="2.6" /><output class="num" id="sz-h-o">2,6 m</output></div>
+    </div>
+    <fieldset class="field sz__fs"><legend class="legend">Oslunění</legend>
+      <div class="sz__seg">
+        <input type="radio" name="sz-sun" id="sz-s1" value="0.9" /><label for="sz-s1">Sever / stín</label>
+        <input type="radio" name="sz-sun" id="sz-s2" value="1" checked /><label for="sz-s2">Běžné</label>
+        <input type="radio" name="sz-sun" id="sz-s3" value="1.2" /><label for="sz-s3">Jih, velká okna</label>
+        <input type="radio" name="sz-sun" id="sz-s4" value="1.35" /><label for="sz-s4">Podkroví</label>
+      </div>
+    </fieldset>
+    <fieldset class="field sz__fs"><legend class="legend">Počet osob</legend>
+      <div class="sz__seg">
+        <input type="radio" name="sz-p" id="sz-p1" value="1" /><label for="sz-p1">1</label>
+        <input type="radio" name="sz-p" id="sz-p2" value="2" checked /><label for="sz-p2">2</label>
+        <input type="radio" name="sz-p" id="sz-p3" value="4" /><label for="sz-p3">3–4</label>
+        <input type="radio" name="sz-p" id="sz-p4" value="6" /><label for="sz-p4">5 a více</label>
+      </div>
+    </fieldset>
+  </div>
+  <div class="sz__out" aria-live="polite">
+    <span class="eyebrow">Doporučený chladicí výkon</span>
+    <p class="sz__big num"><span id="sz-kw">2,6</span><small>kW</small></p>
+    <p class="sz__pick" id="sz-pick">Jednotka 2,6 kW</p>
+    <p class="sz__lbl">Řady s tímto výkonem</p>
+    <div class="sz__recs" id="sz-recs"></div>
+    <a class="btn btn--white" id="sz-cta" href="/poptavka/">Poptat tento výkon</a>
+    <p class="sz__note">Orientační výpočet: zhruba 35 W na m³ prostoru, upraveno podle oslunění a počtu osob. Přesný výkon ověří technik při obhlídce.</p>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var root = document.querySelector('.sz'); if (!root) return;
+    var caps = JSON.parse(root.dataset.caps);
+    var fmt = function (n) { return n.toLocaleString('cs-CZ', { minimumFractionDigits: 1, maximumFractionDigits: 1 }); };
+    var STEPS = [2.6, 3.5, 5.0, 6.3];
+    var a = document.getElementById('sz-area'), h = document.getElementById('sz-h');
+    function calc() {
+      var sun = +root.querySelector('input[name=sz-sun]:checked').value, ppl = +root.querySelector('input[name=sz-p]:checked').value;
+      document.getElementById('sz-area-o').textContent = a.value + ' m²';
+      document.getElementById('sz-h-o').textContent = fmt(+h.value) + ' m';
+      var kw = a.value * h.value * 0.035 * sun + ppl * 0.1;
+      document.getElementById('sz-kw').textContent = fmt(kw);
+      var step = STEPS.find(function (s) { return kw <= s + 0.2; });
+      var pick = document.getElementById('sz-pick'), recs = document.getElementById('sz-recs'), cta = document.getElementById('sz-cta');
+      if (!step) {
+        pick.textContent = 'Více jednotek – navrhneme řešení na míru';
+        recs.innerHTML = '<span class="sz__none">Pro takový prostor rozdělíme výkon do více jednotek.</span>';
+        cta.href = '/poptavka/?plocha=' + a.value; return;
+      }
+      pick.textContent = 'Jednotka ' + fmt(step) + ' kW';
+      var fit = caps.filter(function (c) { return c.kws.some(function (k) { return k >= Math.min(step, kw) - 0.05 && Math.abs(k - step) <= 0.35; }); });
+      recs.innerHTML = fit.map(function (c) { return '<a href="/klimatizace/' + c.id + '/">' + c.name + '</a>'; }).join('');
+      cta.href = '/poptavka/?plocha=' + a.value + '&vykon=' + fmt(step).replace(',', '.');
+    }
+    root.addEventListener('input', calc); calc();
+  })();
+</script>
+
+<style>
+  .sz { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: stretch; }
+  .sz__panel { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: clamp(20px, 3vw, 30px); display: grid; gap: 20px; }
+  .sz__fs { border: 0; padding: 0; margin: 0; }
+  .sz__range { display: flex; align-items: center; gap: 14px; }
+  .sz__range input { flex: 1; accent-color: var(--teal); min-width: 0; height: 28px; }
+  .sz__range output { font: 800 1.05rem var(--f-display); min-width: 5.5ch; text-align: right; }
+  .sz__seg { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .sz__seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .sz__seg label { border: 1px solid #c9d7da; border-radius: 999px; padding: 0.5em 1em; font-size: 0.92rem; cursor: pointer; min-height: 40px; display: inline-flex; align-items: center; }
+  .sz__seg input:checked + label { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .sz__seg input:focus-visible + label { outline: 3px solid var(--teal); outline-offset: 2px; }
+  .sz__out { background: linear-gradient(160deg, var(--teal), var(--teal-dark)); color: #fff; border-radius: var(--r-l); padding: clamp(22px, 3vw, 32px); display: flex; flex-direction: column; gap: 10px; }
+  .sz__out .eyebrow { color: #c8f3f1; margin: 0; }
+  .sz__big { font: 800 clamp(3rem, 7vw, 4.2rem)/1 var(--f-display); margin: 0; }
+  .sz__big small { font-size: 0.4em; margin-left: 6px; }
+  .sz__pick { font: 700 1.15rem var(--f-display); margin: 0; }
+  .sz__lbl { margin: 8px 0 0; font-size: 0.88rem; opacity: 0.85; }
+  .sz__recs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sz__recs :global(a) { color: #fff; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.55); border-radius: 999px; padding: 0.35em 0.9em; font: 600 0.9rem var(--f-display); }
+  .sz__recs :global(a:hover) { background: rgba(255, 255, 255, 0.15); }
+  .sz__recs :global(.sz__none) { font-size: 0.92rem; }
+  .sz__out .btn { align-self: flex-start; margin-top: 8px; }
+  .sz__note { font-size: 0.8rem; opacity: 0.75; margin: auto 0 0; padding-top: 10px; }
+  @media (max-width: 860px) { .sz { grid-template-columns: 1fr; } }
+</style>

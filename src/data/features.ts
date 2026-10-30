@@ -1,0 +1,71 @@
+// Chytré funkce Hisense – popisy z katalogu Hisense 2026/2027. Ikony = oficiální piktogramy Hisense.
+export interface Feature { id: string; name: string; icon: string; short: string; text: string; group: 'chytre' | 'komfort' | 'vzduch' }
+
+export const features: Feature[] = [
+  { id: 'smart-eye', name: 'Smart Eye', icon: '/img/funkce/smart-eye.png', group: 'chytre',
+    short: 'Pozná, kde jste, a podle toho fouká',
+    text: 'Inteligentní oko rozpozná polohu osob v místnosti a upraví proudění vzduchu. Vyberete si „Foukej na mě“ pro rychlé zchlazení, nebo „Foukej mimo mě“, když nechcete průvan.' },
+  { id: 'ai-smart', name: 'AI Smart', icon: '/img/funkce/ai-smart.png', group: 'chytre',
+    short: 'Umělá inteligence řídí komfort',
+    text: 'Klimatizace sama řídí teplotu, vlhkost, směr a intenzitu proudění vzduchu podle podmínek v místnosti. Nemusíte nic nastavovat.' },
+  { id: 'wifi', name: 'Wi‑Fi a aplikace', icon: '/img/funkce/wifi.png', group: 'chytre',
+    short: 'Ovládání z telefonu odkudkoli',
+    text: 'Aplikace ConnectLife propojí klimatizaci s chytrou domácností: ovládání odkudkoli, správa místností, statistiky spotřeby a výkonu, přehled kvality vzduchu a chytrá diagnostika.' },
+  { id: 'hlasove-ovladani', name: 'Hlasové ovládání', icon: '/img/funkce/hlasove-ovladani.png', group: 'chytre',
+    short: 'Stačí říct, co chcete',
+    text: 'Klimatizaci ovládáte hlasem přes aplikaci ConnectLife, kompatibilní s asistenty Google a Amazon Alexa.' },
+  { id: 'i-feel', name: 'I FEEL', icon: '/img/funkce/i-feel.png', group: 'komfort',
+    short: 'Teplota měřená tam, kde sedíte',
+    text: 'Teplota se měří přímo v dálkovém ovladači, tedy u vás na gauči nebo u postele. Klimatizace pak drží přesně tu teplotu, kterou cítíte.' },
+  { id: 'super', name: 'Režim SUPER', icon: '/img/funkce/super.png', group: 'komfort',
+    short: 'Rychle zchladí i zahřeje',
+    text: 'Po příchodu domů jedním tlačítkem spustíte maximální výkon. Místnost rychle vychladí, nebo v zimě rychle zahřeje.' },
+  { id: 'smart', name: 'Režim SMART', icon: '/img/funkce/smart.png', group: 'komfort',
+    short: 'Jedno tlačítko, správný režim',
+    text: 'Jedním stisknutím tlačítka zvolí klimatizace nejvhodnější režim a teplotu podle aktuálních podmínek v místnosti.' },
+  { id: 'celorocni-provoz', name: 'Celoroční provoz', icon: '/img/funkce/celorocni-provoz.png', group: 'komfort',
+    short: 'Chladí v létě, topí v zimě',
+    text: 'Klimatizace Hisense chladí i topí po celý rok. Vyšší řady topí až do venkovní teploty −22 °C a umí udržovat v místnosti +8 °C.' },
+  { id: 'hi-nano', name: 'Ionizace Hi‑NANO', icon: '/img/funkce/hi-nano.png', group: 'vzduch',
+    short: 'Potlačuje viry a bakterie',
+    text: 'Patentovaná ionizace záporných iontů potlačuje bakterie a viry. Podle měření výrobce odstranila 92,6 % viru H1N1 a 88,54 % bakterií E. coli během 2 hodin.' },
+  { id: 'plazma', name: 'Plazmový ionizátor', icon: '/img/funkce/plazma.png', group: 'vzduch',
+    short: 'Odstraňuje pachy',
+    text: 'Studená plazma odstraňuje nepříjemné pachy a čistí vzduch v místnosti.' },
+  { id: 'filtr-4v1', name: 'Filtr 4 v 1', icon: '/img/funkce/filtr-4v1.png', group: 'vzduch',
+    short: 'Čtyřstupňová filtrace',
+    text: 'Filtr s vitamínem C, ionty stříbra, katechinem a HEPA vrstvou zachytí prach a nečistoty ze vzduchu.' },
+  { id: 'uhlikovy-filtr', name: 'Uhlíkový filtr', icon: '/img/funkce/uhlikovy-filtr.png', group: 'vzduch',
+    short: 'Pohlcuje pachy',
+    text: 'Filtr s aktivním uhlím pohlcuje a odstraňuje nepříjemné pachy ze vzduchu.' },
+];
+
+export const featureById = (id: string) => features.find((f) => f.id === id)!;
+
+// Srovnání funkcí podle tabulky „Přehled funkcí“ v katalogu (Air Master, Energy Pro X, Uni Pure, Wings Comfort, Hi-Smart)
+// ● = součást, ○ = volitelně, – = není
+export const compareOrder = ['air-master', 'energy-pro-x', 'uni-pure', 'wings-comfort', 'hi-smart'];
+export const compareRows: ([string] | [string, string | string[], string?])[] = [
+  ['Chytré ovládání'],
+  ['Funkce AI Smart', '●●–––', 'ai-smart'],
+  ['Inteligentní oko Smart Eye', '●●–––', 'smart-eye'],
+  ['Wi‑Fi a aplikace ConnectLife', '●●●●○', 'wifi'],
+  ['Hlasové ovládání', '●●●●–', 'hlasove-ovladani'],
+  ['Komfort'],
+  ['I FEEL – teplota u ovladače', '●●●●●', 'i-feel'],
+  ['Rychlé chlazení a topení SUPER', '●●●●●', 'super'],
+  ['Režim SMART', '●–●●●', 'smart'],
+  ['Noční režim SLEEP', '●●●●●'],
+  ['Automatické lamely ve dvou osách', '●●●●–'],
+  ['Čistý vzduch'],
+  ['Ionizace Hi‑NANO', '●●●––', 'hi-nano'],
+  ['Plazmový ionizátor', '–––●–', 'plazma'],
+  ['Filtr 4 v 1', '●●–●–', 'filtr-4v1'],
+  ['Filtr s aktivním uhlím', '●●●●●', 'uhlikovy-filtr'],
+  ['Samočištění vnitřní jednotky', '●●●●●'],
+  ['Úspora a celý rok'],
+  ['Energetická třída chlazení / topení', ['A+++ / A+++', 'A+++ / A+++', 'A+++ / A++', 'A++ / A+', 'A++ / A+']],
+  ['Topí do venkovní teploty', ['−22 °C', '−22 °C', '−22 °C', '−20 °C', '−15 °C'], 'celorocni-provoz'],
+  ['Vyhřívaná vana venkovní jednotky', '●●●––'],
+  ['Udržování teploty +8 °C', '●●●●●'],
+];

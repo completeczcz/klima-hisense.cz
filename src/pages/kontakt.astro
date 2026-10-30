@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site } from '../data/site';
+const c = site.company;
+---
+<Base
+  title="Kontakt – oficiální zastoupení Hisense"
+  description="Kontakt na Klima Hisense – oficiální zastoupení Hisense pro ČR, COMPLETE CZ, spol. s r.o., Vyskočilova 1410/1, Praha 4. Telefon, e-mail a poptávkový formulář."
+  crumbs={[{ name: 'Kontakt', href: '/kontakt/' }]}
+>
+  <section class="section" style="padding-top:28px">
+    <div class="wrap kt">
+      <div>
+        <span class="eyebrow">Kontakt</span>
+        <h1>Jsme tu pro vás</h1>
+        <p class="lead">Poradíme s výběrem klimatizace Hisense, výkonem i montáží. Zavolejte, napište nebo pošlete poptávku.</p>
+        <div class="kt__cards">
+          <div class="card kt__card"><span>Telefon</span><a href={site.phoneHref}>{site.phone}</a><small>{site.hours}</small></div>
+          <div class="card kt__card"><span>E‑mail</span><a href={`mailto:${site.email}`}>{site.email}</a><small>odpověď {site.responseTime}</small></div>
+          <div class="card kt__card"><span>Kontaktní osoba</span><b>{site.contactPerson.name}</b><small>{site.contactPerson.role}</small></div>
+          <div class="card kt__card"><span>Provozovatel</span><b>{c.name}</b><small>{c.address}<br />{c.building}<br />IČO {c.ico}</small></div>
+        </div>
+      </div>
+      <LeadForm heading="Napište nám" />
+    </div>
+  </section>
+</Base>
+<style>
+  .kt { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 56px); align-items: start; }
+  .kt h1 { font-size: var(--step-3); }
+  .kt__cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+  .kt__card { padding: 18px; display: grid; gap: 4px; align-content: start; }
+  .kt__card span { font: 700 0.72rem var(--f-display); text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-3); }
+  .kt__card a, .kt__card b { font: 800 1.05rem var(--f-display); text-decoration: none; color: var(--ink); overflow-wrap: anywhere; }
+  .kt__card a { color: var(--teal-ink); }
+  .kt__card small { color: var(--ink-2); font-size: 0.86rem; }
+  @media (max-width: 960px) { .kt { grid-template-columns: 1fr; } }
+  @media (max-width: 420px) { .kt__cards { grid-template-columns: 1fr; } }
+</style>

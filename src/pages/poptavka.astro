@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site } from '../data/site';
+---
+<Base
+  title="Nezávazná poptávka klimatizace Hisense"
+  description="Pošlete nezávaznou poptávku klimatizace Hisense s montáží. Ozveme se do 1 pracovního dne, doporučíme řadu a výkon a zajistíme obhlídku po celé ČR."
+  crumbs={[{ name: 'Poptávka', href: '/poptavka/' }]}
+  hideStickyCta
+>
+  <section class="section" style="padding-top:28px">
+    <div class="wrap pq">
+      <div class="pq__side">
+        <span class="eyebrow">Nezávazná poptávka</span>
+        <h1>Klimatizace Hisense na míru</h1>
+        <p class="lead">Vyplňte pár údajů. Ozveme se {site.responseTime}, doporučíme řadu a výkon a domluvíme obhlídku s partnerem z vašeho regionu.</p>
+        <ul class="ticks">
+          <li>Poptávka je zdarma a nezávazná</li>
+          <li>Montáž po celé ČR prověřenými partnery</li>
+          <li>Záruka {site.warrantyYears} roky na jednotky Hisense</li>
+        </ul>
+        <div class="pq__contact">
+          <p class="pq__who">{site.contactPerson.name}<span>{site.contactPerson.role}, {site.company.name}</span></p>
+          <p><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
+          <p class="small muted">{site.hours}</p>
+        </div>
+      </div>
+      <LeadForm />
+    </div>
+  </section>
+</Base>
+<style>
+  .pq { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 56px); align-items: start; }
+  .pq h1 { font-size: var(--step-3); }
+  .pq__contact { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 10px; }
+  .pq__who { font: 800 1.1rem var(--f-display); margin-bottom: 6px; }
+  .pq__who span { display: block; font: 400 0.88rem var(--f-body); color: var(--ink-2); }
+  .pq__contact a { font: 700 1.1rem var(--f-display); text-decoration: none; }
+  @media (max-width: 900px) { .pq { grid-template-columns: 1fr; } }
+</style>

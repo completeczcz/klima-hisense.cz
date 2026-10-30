@@ -1,0 +1,140 @@
+---
+import { site } from '../data/site';
+import { series } from '../data/products';
+interface Props { compact?: boolean; heading?: string }
+const { compact = false, heading } = Astro.props;
+const tk = site.turnstileSiteKey;
+---
+<form class:list={['lead-form', { 'lead-form--compact': compact }]} method="post" action="/api/poptavka" novalidate>
+  {heading && <h2 class="lead-form__h">{heading}</h2>}
+  <fieldset class="lf-fs full">
+    <legend class="legend">Kam klimatizaci potřebujete?</legend>
+    <div class="lf-seg">
+      <input type="radio" name="objekt" id="lf-o1" value="byt" checked /><label for="lf-o1">Byt</label>
+      <input type="radio" name="objekt" id="lf-o2" value="dum" /><label for="lf-o2">Rodinný dům</label>
+      <input type="radio" name="objekt" id="lf-o3" value="kancelar" /><label for="lf-o3">Kancelář / provozovna</label>
+      <input type="radio" name="objekt" id="lf-o4" value="jine" /><label for="lf-o4">Jiné</label>
+    </div>
+  </fieldset>
+  {!compact && (
+    <fieldset class="lf-fs full">
+      <legend class="legend">Které řady vás zajímají? <span class="lf-opt">(nepovinné)</span></legend>
+      <div class="lf-chips">
+        {series.map((s) => (<><input type="checkbox" name="rady" id={`lf-r-${s.id}`} value={s.name} /><label for={`lf-r-${s.id}`}>{s.name}</label></>))}
+        <input type="checkbox" name="rady" id="lf-r-poradit" value="Poradit" /><label for="lf-r-poradit">Poraďte mi</label>
+      </div>
+    </fieldset>
+  )}
+  <div class="field">
+    <label for="lf-mistnosti">Počet místností</label>
+    <select id="lf-mistnosti" name="mistnosti"><option>1</option><option>2</option><option>3</option><option>4 a více</option></select>
+  </div>
+  <div class="field">
+    <label for="lf-plocha">Plocha místnosti (m²)</label>
+    <input id="lf-plocha" name="plocha" inputmode="numeric" placeholder="např. 25" />
+  </div>
+  <div class="field">
+    <label for="lf-psc">PSČ realizace *</label>
+    <input id="lf-psc" name="psc" inputmode="numeric" autocomplete="postal-code" placeholder="110 00" required />
+  </div>
+  <div class="field">
+    <label for="lf-obec">Obec *</label>
+    <input id="lf-obec" name="obec" autocomplete="address-level2" required />
+  </div>
+  <div class="field">
+    <label for="lf-jmeno">Jméno a příjmení *</label>
+    <input id="lf-jmeno" name="jmeno" autocomplete="name" required />
+  </div>
+  <div class="field">
+    <label for="lf-telefon">Telefon *</label>
+    <input id="lf-telefon" name="telefon" type="tel" autocomplete="tel" placeholder="+420" required />
+  </div>
+  <div class="field full">
+    <label for="lf-email">E‑mail *</label>
+    <input id="lf-email" name="email" type="email" autocomplete="email" required />
+  </div>
+  <div class="field full">
+    <label for="lf-poznamka">Zpráva</label>
+    <textarea id="lf-poznamka" name="poznamka" placeholder="Např. umístění venkovní jednotky, patro, termín, více místností…"></textarea>
+  </div>
+  <div class="lf-hp" aria-hidden="true"><label for="lf-web">Web</label><input id="lf-web" name="web" tabindex="-1" autocomplete="off" /></div>
+  <input type="hidden" name="zdroj_stranky" />
+  <input type="hidden" name="kampan" />
+  <input type="hidden" name="gclid" />
+  <label class="lf-check full"><input type="checkbox" name="souhlas" value="ano" required /> <span>Souhlasím se <a href="/ochrana-osobnich-udaju/" target="_blank">zpracováním osobních údajů</a> za účelem vyřízení poptávky. Poptávku můžeme předat prověřenému montážnímu partnerovi z vašeho regionu.</span></label>
+  {tk && <div class="cf-turnstile full" data-sitekey={tk} data-language="cs"></div>}
+  <p class="lf-err full" role="alert" hidden></p>
+  <div class="full lf-submit">
+    <button class="btn" type="submit">Odeslat nezávaznou poptávku</button>
+    <p class="small muted">Odpovíme {site.responseTime}. Poptávka je zdarma a nezávazná.</p>
+  </div>
+</form>
+{tk && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+
+<script is:inline>
+  (function () {
+    var f = document.querySelector('.lead-form'); if (!f) return;
+    var q = new URLSearchParams(location.search);
+    // Předvyplnění z odkazů (?rada=air-master&plocha=25&vykon=2.6)
+    if (q.get('rada')) { var c = f.querySelector('#lf-r-' + q.get('rada')); if (c) c.checked = true; }
+    if (q.get('plocha')) f.plocha.value = q.get('plocha').replace(/\D/g, '').slice(0, 4);
+    if (q.get('vykon')) f.poznamka.value = 'Orientační výpočet výkonu: ' + q.get('vykon').replace('.', ',') + ' kW.';
+    if (q.get('vice')) { f.mistnosti.value = '2'; f.poznamka.value = 'Potřebuji klimatizaci do více místností. '; }
+    try {
+      f.zdroj_stranky.value = sessionStorage.getItem('kh-landing') || location.pathname;
+      f.kampan.value = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term'].map(function (k) { return sessionStorage.getItem('kh-' + k); }).filter(Boolean).join(' / ');
+      f.gclid.value = sessionStorage.getItem('kh-gclid') || sessionStorage.getItem('kh-gbraid') || sessionStorage.getItem('kh-wbraid') || '';
+    } catch (e) {}
+    var err = f.querySelector('.lf-err');
+    var msg = { psc: 'Zkontrolujte PSČ (5 číslic).', telefon: 'Zkontrolujte telefonní číslo.', email: 'Zkontrolujte e‑mail.', souhlas: 'Potvrďte prosím souhlas se zpracováním údajů.', povinne: 'Vyplňte prosím jméno, PSČ a obec.', limit: 'Poslali jste už několik poptávek. Zkuste to prosím později nebo zavolejte.' };
+    function validate() {
+      if (!f.jmeno.value.trim() || !f.obec.value.trim()) return 'povinne';
+      if (!/^\d{3}\s?\d{2}$/.test(f.psc.value.trim())) return 'psc';
+      if (!/^\+?[\d\s]{9,17}$/.test(f.telefon.value.trim())) return 'telefon';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) return 'email';
+      if (!f.souhlas.checked) return 'souhlas';
+      return '';
+    }
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = validate();
+      if (v) { err.textContent = msg[v]; err.hidden = false; return; }
+      err.hidden = true;
+      var btn = f.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Odesílám…';
+      var data = {}; new FormData(f).forEach(function (val, k) { if (k === 'rady') { (data.rady = data.rady || []).push(val); } else data[k] = val; });
+      fetch('/api/poptavka', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) })
+        .then(function (r) { return r.json().catch(function () { return { ok: false, error: 'server' }; }); })
+        .then(function (out) {
+          if (out.ok) { location.href = '/dekujeme/'; return; }
+          err.textContent = msg[out.error] || 'Poptávku se nepodařilo odeslat. Zkuste to prosím znovu nebo zavolejte.'; err.hidden = false;
+          btn.disabled = false; btn.textContent = 'Odeslat nezávaznou poptávku';
+        })
+        .catch(function () {
+          err.textContent = 'Poptávku se nepodařilo odeslat. Zkontrolujte připojení nebo zavolejte.'; err.hidden = false;
+          btn.disabled = false; btn.textContent = 'Odeslat nezávaznou poptávku';
+        });
+    });
+  })();
+</script>
+
+<style>
+  .lead-form { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: clamp(20px, 3vw, 32px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; box-shadow: var(--shadow); }
+  .lead-form .full { grid-column: 1 / -1; }
+  .lead-form__h { grid-column: 1 / -1; font-size: var(--step-2); margin: 0; }
+  .lf-fs { border: 0; margin: 0; padding: 0; }
+  .lf-opt { font-weight: 400; color: var(--ink-3); }
+  .lf-seg, .lf-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .lf-seg input, .lf-chips input { position: absolute; opacity: 0; pointer-events: none; }
+  .lf-seg label, .lf-chips label { display: inline-flex; align-items: center; min-height: 42px; border: 1px solid #c9d7da; border-radius: 999px; padding: 0.45em 1em; font-size: 0.94rem; cursor: pointer; transition: all 0.15s; }
+  .lf-seg input:checked + label, .lf-chips input:checked + label { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .lf-chips input:checked + label::before { content: '✓'; margin-right: 6px; font-weight: 700; }
+  .lf-seg input:focus-visible + label, .lf-chips input:focus-visible + label { outline: 3px solid var(--teal); outline-offset: 2px; }
+  .lf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .lf-check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.88rem; color: var(--ink-2); }
+  .lf-check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--teal); flex: none; }
+  .lf-err { color: var(--err); font-weight: 600; margin: 0; }
+  .lf-submit { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+  .lf-submit p { margin: 0; }
+  .lead-form--compact { box-shadow: none; }
+  @media (max-width: 600px) { .lead-form { grid-template-columns: 1fr; } .lf-submit .btn { width: 100%; } }
+</style>
