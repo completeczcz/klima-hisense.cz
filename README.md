@@ -2,7 +2,7 @@
 
 Poptávkový web pro klimatizace Hisense s montáží po celé ČR. Provozuje COMPLETE CZ, spol. s r.o., oficiální zastoupení Hisense pro ČR.
 
-- **Technika:** Astro (statický web) + Cloudflare Pages Functions + D1
+- **Technika:** Astro (statický web) + Cloudflare Worker (formulář, `worker/index.js`) + D1 + Email Routing
 - **Nasazení a nastavení:** viz [NASAZENI.md](NASAZENI.md)
 
 ## Struktura

@@ -27,11 +27,24 @@ const tk = site.turnstileSiteKey;
   )}
   <div class="field">
     <label for="lf-mistnosti">Počet místností</label>
-    <select id="lf-mistnosti" name="mistnosti"><option>1</option><option>2</option><option>3</option><option>4 a více</option></select>
+    <select id="lf-mistnosti" name="mistnosti"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6 a více</option></select>
   </div>
   <div class="field">
-    <label for="lf-plocha">Plocha místnosti (m²)</label>
+    <label for="lf-plocha"><span class="lf-pl1">Plocha místnosti (m²)</span><span class="lf-pl2" hidden>Celková plocha (m²)</span></label>
     <input id="lf-plocha" name="plocha" inputmode="numeric" placeholder="např. 25" />
+  </div>
+  <fieldset class="lf-fs full lf-reseni" hidden>
+    <legend class="legend">Jaké řešení zvažujete?</legend>
+    <div class="lf-seg">
+      <input type="radio" name="reseni" id="lf-s1" value="multisplit" /><label for="lf-s1">Multisplit – jedna venkovní jednotka</label>
+      <input type="radio" name="reseni" id="lf-s2" value="split" /><label for="lf-s2">Samostatné jednotky</label>
+      <input type="radio" name="reseni" id="lf-s3" value="poradit" checked /><label for="lf-s3">Poraďte mi</label>
+    </div>
+  </fieldset>
+  <div class="full lf-sestava" hidden>
+    <p class="lf-sestava__h">Návrh z kalkulačky <a href="/#vypocet">Spočítat znovu</a></p>
+    <ul class="lf-sestava__list"></ul>
+    <input type="hidden" name="sestava" />
   </div>
   <div class="field">
     <label for="lf-psc">PSČ realizace *</label>
@@ -55,7 +68,7 @@ const tk = site.turnstileSiteKey;
   </div>
   <div class="field full">
     <label for="lf-poznamka">Zpráva</label>
-    <textarea id="lf-poznamka" name="poznamka" placeholder="Např. umístění venkovní jednotky, patro, termín, více místností…"></textarea>
+    <textarea id="lf-poznamka" name="poznamka" placeholder="Např. umístění venkovní jednotky, patro, vzdálenost mezi místnostmi, termín…"></textarea>
   </div>
   <div class="lf-hp" aria-hidden="true"><label for="lf-web">Web</label><input id="lf-web" name="web" tabindex="-1" autocomplete="off" /></div>
   <input type="hidden" name="zdroj_stranky" />
@@ -78,8 +91,23 @@ const tk = site.turnstileSiteKey;
     // Předvyplnění z odkazů (?rada=air-master&plocha=25&vykon=2.6)
     if (q.get('rada')) { var c = f.querySelector('#lf-r-' + q.get('rada')); if (c) c.checked = true; }
     if (q.get('plocha')) f.plocha.value = q.get('plocha').replace(/\D/g, '').slice(0, 4);
-    if (q.get('vykon')) f.poznamka.value = 'Orientační výpočet výkonu: ' + q.get('vykon').replace('.', ',') + ' kW.';
-    if (q.get('vice')) { f.mistnosti.value = '2'; f.poznamka.value = 'Potřebuji klimatizaci do více místností. '; }
+    if (q.get('vykon') && !q.get('sestava')) f.poznamka.value = 'Orientační výpočet výkonu: ' + q.get('vykon').replace('.', ',') + ' kW.';
+    if (q.get('vice')) { f.mistnosti.value = '2'; q.set('reseni', q.get('reseni') || 'poradit'); }
+    var m = parseInt(q.get('mistnosti'), 10);
+    if (m > 0) f.mistnosti.value = m > 5 ? '6 a více' : String(m);
+    if (/^(multisplit|split|poradit)$/.test(q.get('reseni') || '')) f.querySelector('input[name=reseni][value=' + q.get('reseni') + ']').checked = true;
+    var box = f.querySelector('.lf-sestava');
+    if (q.get('sestava')) {
+      var sest = q.get('sestava').slice(0, 700);
+      f.sestava.value = sest;
+      box.querySelector('ul').innerHTML = sest.split(' | ').map(function (part) {
+        var li = document.createElement('li'); li.textContent = part; return li.outerHTML;
+      }).join('');
+      box.hidden = false;
+    }
+    var resFs = f.querySelector('.lf-reseni'), pl1 = f.querySelector('.lf-pl1'), pl2 = f.querySelector('.lf-pl2');
+    function rooms() { var more = f.mistnosti.value !== '1'; resFs.hidden = !more; pl1.hidden = more; pl2.hidden = !more; }
+    f.mistnosti.addEventListener('change', rooms); rooms();
     try {
       f.zdroj_stranky.value = sessionStorage.getItem('kh-landing') || location.pathname;
       f.kampan.value = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term'].map(function (k) { return sessionStorage.getItem('kh-' + k); }).filter(Boolean).join(' / ');
@@ -102,6 +130,7 @@ const tk = site.turnstileSiteKey;
       err.hidden = true;
       var btn = f.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Odesílám…';
       var data = {}; new FormData(f).forEach(function (val, k) { if (k === 'rady') { (data.rady = data.rady || []).push(val); } else data[k] = val; });
+      if (f.mistnosti.value === '1') data.reseni = 'split';
       fetch('/api/poptavka', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) })
         .then(function (r) { return r.json().catch(function () { return { ok: false, error: 'server' }; }); })
         .then(function (out) {
@@ -136,5 +165,10 @@ const tk = site.turnstileSiteKey;
   .lf-submit { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
   .lf-submit p { margin: 0; }
   .lead-form--compact { box-shadow: none; }
+  .lf-reseni[hidden], .lf-sestava[hidden] { display: none; }
+  .lf-sestava { background: var(--teal-tint); border: 1px solid var(--teal-soft); border-left: 4px solid var(--teal); border-radius: var(--r); padding: 12px 16px; }
+  .lf-sestava__h { margin: 0 0 4px; font: 700 0.95rem var(--f-display); display: flex; justify-content: space-between; gap: 12px; }
+  .lf-sestava__h a { font-weight: 600; font-size: 0.88rem; }
+  .lf-sestava__list { margin: 0; padding-left: 1.1em; font-size: 0.92rem; color: var(--ink-2); }
   @media (max-width: 600px) { .lead-form { grid-template-columns: 1fr; } .lf-submit .btn { width: 100%; } }
 </style>

@@ -23,6 +23,7 @@ Web je statický (Astro) a běží jako **Cloudflare Worker se statickými soubo
 
 1. Workers & Pages → **D1** → **Create database** → název `klima-hisense-db`.
 2. V databázi otevřete **Console** a vložte celý obsah souboru `db/schema.sql` → Execute.
+   Pozdější změny schématu (nové sloupce) provádí Worker sám při první poptávce – seznam `MIGRATIONS` ve `worker/index.js`, provedené verze jsou v tabulce `schema_migrations`.
 3. Pages projekt → **Settings → Bindings** → **Add → D1 database**: Variable name `DB`, databáze `klima-hisense-db`.
 4. ID databáze doplňte do `wrangler.toml` (`database_id`), aby šlo testovat lokálně.
 

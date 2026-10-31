@@ -15,8 +15,32 @@ const FIELDS = {
   objekt: 20, mistnosti: 20, plocha: 10, psc: 10, obec: 80,
   jmeno: 100, telefon: 25, email: 120, poznamka: 2000, souhlas: 5,
   zdroj_stranky: 300, kampan: 300, gclid: 200,
+  reseni: 20, sestava: 700,
 };
 const OBJEKT = { byt: 'Byt', dum: 'Rodinný dům', kancelar: 'Kancelář / provozovna', jine: 'Jiné' };
+const RESENI = { split: 'Samostatné jednotky', multisplit: 'Multisplit (jedna venkovní jednotka)', poradit: 'Poradit s řešením' };
+
+// Změny schématu D1 – jen přidávat na konec (provedené verze jsou v tabulce schema_migrations).
+const MIGRATIONS = [
+  [1, 'ALTER TABLE leads ADD COLUMN reseni TEXT'],
+  [2, 'ALTER TABLE leads ADD COLUMN sestava TEXT'],
+];
+let schemaReady = false;
+async function ensureSchema(db) {
+  if (schemaReady) return;
+  await db.prepare("CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL DEFAULT (datetime('now')))").run();
+  const done = new Set(((await db.prepare('SELECT version FROM schema_migrations').all()).results || []).map((r) => r.version));
+  for (const [version, sql] of MIGRATIONS) {
+    if (done.has(version)) continue;
+    try {
+      await db.prepare(sql).run();
+    } catch (e) {
+      if (!/duplicate column/i.test(String(e?.message || e))) throw e;
+    }
+    await db.prepare('INSERT OR IGNORE INTO schema_migrations (version) VALUES (?)').bind(version).run();
+  }
+  schemaReady = true;
+}
 
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
@@ -65,6 +89,7 @@ async function handleLead(request, env, ctx) {
   }
   const rady = (Array.isArray(raw.rady) ? raw.rady : []).filter((r) => typeof r === 'string').map((r) => r.slice(0, 40)).slice(0, 8);
   if (!OBJEKT[d.objekt]) d.objekt = 'jine';
+  if (!RESENI[d.reseni]) d.reseni = '';
 
   if (!d.jmeno || !d.obec) return fail('povinne');
   if (!/^\d{3}\s?\d{2}$/.test(d.psc)) return fail('psc');
@@ -93,13 +118,29 @@ async function handleLead(request, env, ctx) {
 
   let id = 0;
   if (env.DB) {
-    const res = await env.DB.prepare(
-      `INSERT INTO leads (objekt, rady, mistnosti, plocha, psc, obec, jmeno, telefon, email, poznamka, zdroj_stranky, kampan, gclid, ip_hash, user_agent, poznamka_interni)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    )
-      .bind(d.objekt, JSON.stringify(rady), d.mistnosti, d.plocha, d.psc, d.obec, d.jmeno, d.telefon, d.email, d.poznamka,
-        d.zdroj_stranky, d.kampan, d.gclid, ipHash, (request.headers.get('user-agent') || '').slice(0, 300), captchaNote)
-      .run();
+    const ua = (request.headers.get('user-agent') || '').slice(0, 300);
+    let res;
+    try {
+      await ensureSchema(env.DB);
+      res = await env.DB.prepare(
+        `INSERT INTO leads (objekt, rady, mistnosti, plocha, psc, obec, jmeno, telefon, email, poznamka, zdroj_stranky, kampan, gclid, ip_hash, user_agent, poznamka_interni, reseni, sestava)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+        .bind(d.objekt, JSON.stringify(rady), d.mistnosti, d.plocha, d.psc, d.obec, d.jmeno, d.telefon, d.email, d.poznamka,
+          d.zdroj_stranky, d.kampan, d.gclid, ipHash, ua, captchaNote, d.reseni, d.sestava)
+        .run();
+    } catch (e) {
+      // Pojistka: kdyby migrace selhala, poptávka se uloží do původních sloupců (řešení a sestava do interní poznámky)
+      console.error('Uložení s novými sloupci selhalo:', String(e?.message || e));
+      const extra = [RESENI[d.reseni] && `Řešení: ${RESENI[d.reseni]}`, d.sestava && `Návrh z kalkulačky: ${d.sestava}`].filter(Boolean).join('\n');
+      res = await env.DB.prepare(
+        `INSERT INTO leads (objekt, rady, mistnosti, plocha, psc, obec, jmeno, telefon, email, poznamka, zdroj_stranky, kampan, gclid, ip_hash, user_agent, poznamka_interni)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+        .bind(d.objekt, JSON.stringify(rady), d.mistnosti, d.plocha, d.psc, d.obec, d.jmeno, d.telefon, d.email, d.poznamka,
+          d.zdroj_stranky, d.kampan, d.gclid, ipHash, ua, [captchaNote, extra].filter(Boolean).join('\n') || null)
+        .run();
+    }
     id = res.meta?.last_row_id ?? 0;
   }
 
@@ -114,10 +155,11 @@ async function notifyLead(env, id, d, rady, captchaNote) {
   if (!env.EMAIL || typeof env.EMAIL.send !== 'function' || !env.NOTIFY_TO || !env.MAIL_FROM) return;
   const rows = [
     ['Objekt', OBJEKT[d.objekt]], ['Zájem o řady', rady.join(', ')], ['Počet místností', d.mistnosti], ['Plocha', d.plocha && `${d.plocha} m²`],
+    ['Řešení', RESENI[d.reseni]], ['Návrh z kalkulačky', d.sestava.split(' | ').join('\n')],
     ['Místo', `${d.psc} ${d.obec}`], ['Jméno', d.jmeno], ['Telefon', d.telefon], ['E-mail', d.email], ['Zpráva', d.poznamka],
     ['Vstupní stránka', d.zdroj_stranky], ['Kampaň', d.kampan], ['GCLID', d.gclid], ['Kontrola', captchaNote],
   ].filter(([, v]) => v);
-  const subject = `${captchaNote ? '[ke kontrole] ' : ''}Poptávka #${id}: ${OBJEKT[d.objekt]} – ${d.obec}`;
+  const subject = `${captchaNote ? '[ke kontrole] ' : ''}Poptávka #${id}: ${OBJEKT[d.objekt]}${d.reseni === 'multisplit' ? ', multisplit' : ''}${d.mistnosti && d.mistnosti !== '1' ? `, místností: ${d.mistnosti}` : ''} – ${d.obec}`;
   const text = [`Nová poptávka #${id} z klima-hisense.cz`, '', ...rows.map(([k, v]) => `${k}: ${v}`)].join('\n');
   const html = `<h2 style="font-family:Arial,sans-serif;color:#007e7b">Nová poptávka #${id} – klima-hisense.cz</h2>
 <table cellpadding="6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">${rows
