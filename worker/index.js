@@ -24,6 +24,14 @@ const RESENI = { split: 'Samostatné jednotky', multisplit: 'Multisplit (jedna v
 const MIGRATIONS = [
   [1, 'ALTER TABLE leads ADD COLUMN reseni TEXT'],
   [2, 'ALTER TABLE leads ADD COLUMN sestava TEXT'],
+  [3, `CREATE TABLE IF NOT EXISTS partneri (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    firma TEXT, ico TEXT, jmeno TEXT, telefon TEXT, email TEXT,
+    kraje TEXT, fplyny TEXT, poznamka TEXT,
+    ip_hash TEXT, stav TEXT NOT NULL DEFAULT 'nový', poznamka_interni TEXT
+  )`],
+  [4, 'CREATE INDEX IF NOT EXISTS idx_partneri_ip ON partneri(ip_hash, created_at)'],
 ];
 let schemaReady = false;
 async function ensureSchema(db) {
@@ -52,6 +60,10 @@ export default {
     if (url.pathname === '/api/poptavka' || url.pathname === '/api/poptavka/') {
       if (request.method !== 'POST') return json({ ok: false, error: 'method' }, 405);
       return handleLead(request, env, ctx);
+    }
+    if (url.pathname === '/api/partner' || url.pathname === '/api/partner/') {
+      if (request.method !== 'POST') return json({ ok: false, error: 'method' }, 405);
+      return handlePartner(request, env, ctx);
     }
     if (url.pathname.startsWith('/api/')) return json({ ok: false, error: 'not-found' }, 404);
     return env.ASSETS.fetch(request);
@@ -149,6 +161,52 @@ async function handleLead(request, env, ctx) {
   if (ctx?.waitUntil) ctx.waitUntil(mail); else await mail;
 
   return wantsJson ? json({ ok: true, id }) : Response.redirect(new URL('/dekujeme/', request.url), 303);
+}
+
+// Zájem montážní firmy o partnerství (/pro-montazni-firmy/)
+const KRAJE = ['Praha', 'Středočeský', 'Jihočeský', 'Plzeňský', 'Karlovarský', 'Ústecký', 'Liberecký', 'Královéhradecký', 'Pardubický', 'Vysočina', 'Jihomoravský', 'Olomoucký', 'Zlínský', 'Moravskoslezský'];
+async function handlePartner(request, env, ctx) {
+  const origin = request.headers.get('origin');
+  if (origin && new URL(origin).host !== new URL(request.url).host) return json({ ok: false, error: 'origin' }, 403);
+  let raw;
+  try { raw = await request.json(); } catch { return json({ ok: false, error: 'bad-body' }, 400); }
+  if (!raw || typeof raw !== 'object') return json({ ok: false, error: 'bad-body' }, 400);
+  if (raw.web) return json({ ok: true, id: 0 });
+  const str = (k, max) => (typeof raw[k] === 'string' ? raw[k].trim().slice(0, max) : '');
+  const d = { firma: str('firma', 150), ico: str('ico', 12).replace(/\s/g, ''), jmeno: str('jmeno', 100), telefon: str('telefon', 25), email: str('email', 120), fplyny: str('fplyny', 5), poznamka: str('poznamka', 2000), souhlas: str('souhlas', 5) };
+  const kraje = (Array.isArray(raw.kraje) ? raw.kraje : []).filter((k) => KRAJE.includes(k));
+  if (!d.firma || !d.jmeno) return json({ ok: false, error: 'povinne' }, 400);
+  if (d.ico && !/^\d{8}$/.test(d.ico)) return json({ ok: false, error: 'ico' }, 400);
+  if (!/^\+?[\d\s]{9,17}$/.test(d.telefon)) return json({ ok: false, error: 'telefon' }, 400);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) return json({ ok: false, error: 'email' }, 400);
+  if (d.souhlas !== 'ano') return json({ ok: false, error: 'souhlas' }, 400);
+  if (!['ano', 'ne'].includes(d.fplyny)) d.fplyny = '';
+
+  const ip = request.headers.get('cf-connecting-ip') || '';
+  const ipHash = ip ? await sha256(ip + (env.IP_SALT || 'klima-hisense')) : '';
+  let id = 0;
+  if (env.DB) {
+    await ensureSchema(env.DB);
+    if (ipHash) {
+      const row = await env.DB.prepare("SELECT COUNT(*) AS n FROM partneri WHERE ip_hash = ? AND created_at > datetime('now', '-1 hour')").bind(ipHash).first();
+      if (row && row.n >= 3) return json({ ok: false, error: 'limit' }, 429);
+    }
+    const res = await env.DB.prepare('INSERT INTO partneri (firma, ico, jmeno, telefon, email, kraje, fplyny, poznamka, ip_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .bind(d.firma, d.ico, d.jmeno, d.telefon, d.email, JSON.stringify(kraje), d.fplyny, d.poznamka, ipHash).run();
+    id = res.meta?.last_row_id ?? 0;
+  }
+  const mail = (async () => {
+    if (!env.EMAIL || typeof env.EMAIL.send !== 'function' || !env.NOTIFY_TO || !env.MAIL_FROM) return;
+    const rows = [['Firma', d.firma], ['IČO', d.ico], ['Kontaktní osoba', d.jmeno], ['Telefon', d.telefon], ['E-mail', d.email], ['Kraje', kraje.join(', ')], ['Certifikace F-plyny', d.fplyny], ['Zpráva', d.poznamka]].filter(([, v]) => v);
+    const subject = `Zájem o partnerství #${id}: ${d.firma}`;
+    const text = [`Montážní firma má zájem o spolupráci (klima-hisense.cz)`, '', ...rows.map(([k, v]) => `${k}: ${v}`)].join('\n');
+    const html = `<h2 style="font-family:Arial,sans-serif;color:#007e7b">Zájem o partnerství #${id} – klima-hisense.cz</h2><table cellpadding="6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">${rows.map(([k, v]) => `<tr><td style="border-bottom:1px solid #ddd;vertical-align:top"><b>${esc(k)}</b></td><td style="border-bottom:1px solid #ddd">${esc(v).replace(/\n/g, '<br>')}</td></tr>`).join('')}</table>`;
+    for (const to of String(env.NOTIFY_TO).split(',').map((s) => s.trim()).filter(Boolean)) {
+      await env.EMAIL.send(new EmailMessage(env.MAIL_FROM, to, buildMime({ from: env.MAIL_FROM, fromName: 'Klima Hisense – partneři', to, replyTo: d.email, subject, text, html })));
+    }
+  })().catch((e) => console.error('E-mail o partnerství se nepodařilo odeslat:', String(e?.message || e)));
+  if (ctx?.waitUntil) ctx.waitUntil(mail); else await mail;
+  return json({ ok: true, id });
 }
 
 async function notifyLead(env, id, d, rady, captchaNote) {
