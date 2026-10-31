@@ -70,9 +70,9 @@ const posts = pick.map((id) => all.find((p) => p.id === id)).filter((p): p is No
       <div class="head">
         <span class="eyebrow">Výpočet výkonu</span>
         <h2>Jak výkonnou klimatizaci potřebujete?</h2>
-        <p class="lead">Nastavte velikost místnosti a hned uvidíte doporučený výkon i řady, které ho nabízejí.</p>
+        <p class="lead">Zadejte místnosti a hned uvidíte doporučený výkon a řady, které ho nabízejí. U více místností spočítáme i sestavu multisplit s jednou venkovní jednotkou.</p>
       </div>
-      <Sizer />
+      <Sizer id="vypocet" />
     </div>
   </section>
 
@@ -87,7 +87,7 @@ const posts = pick.map((id) => all.find((p) => p.id === id)).filter((p): p is No
           <li>Originální jednotky s plnou zárukou výrobce a servisem v ČR</li>
           <li>Montáž prověřenými partnery z vašeho regionu</li>
           <li>Náhradní díly a technická podpora přímo od zastoupení</li>
-          <li>Poradíme s výběrem i s řešením pro více místností</li>
+          <li>Poradíme s výběrem i s <a href="/klimatizace/multisplit/">multisplitem pro více místností</a></li>
         </ul>
         <dl class="why__stats">
           <div><dt>23+ let</dt><dd>praxe v oboru</dd></div>

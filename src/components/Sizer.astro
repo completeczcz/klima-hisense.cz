@@ -1,98 +1,281 @@
 ---
 import { series } from '../data/products';
-// Pro výpočet: výkony modelů každé řady (chladicí kW)
-const caps = series.map((s) => ({ id: s.id, name: s.name, kws: [...new Set(s.models.map((m) => parseFloat(m.kw.split(' /')[0].replace(',', '.'))))] }));
+import { outdoor, multiSeries } from '../data/multisplit';
+interface Props { rooms?: string[]; id?: string }
+// rooms: výchozí místnosti ve tvaru 'typ:plocha', např. ['obyvak:25', 'loznice:14']
+const { rooms = ['obyvak:25'], id = 'vypocet' } = Astro.props;
+// Pro výpočet: výkony modelů každé řady (chladicí kW) – samostatné jednotky
+const caps = series.map((s) => ({ id: s.id, name: s.name, kws: [...new Set(s.models.map((m) => parseFloat(m.kw.split(' /')[0].replace(',', '.'))))], multi: multiSeries[s.id] ?? [] }));
+const data = { caps, outdoor, rooms };
 ---
-<div class="sz" data-caps={JSON.stringify(caps)}>
+<div class="sz" id={id} data-sz={JSON.stringify(data)}>
   <div class="sz__panel">
-    <div class="field">
-      <label for="sz-area">Plocha místnosti</label>
-      <div class="sz__range"><input type="range" id="sz-area" min="8" max="70" step="1" value="25" /><output class="num" id="sz-area-o">25 m²</output></div>
+    <div class="sz__head">
+      <p class="legend">Místnosti</p>
+      <p class="small muted">Přidejte všechny místnosti, které chcete klimatizovat.</p>
+    </div>
+    <ol class="sz__rooms" aria-live="polite"></ol>
+    <div class="sz__addrow">
+      <button type="button" class="sz__add">+ Přidat místnost</button>
+      <p class="sz__hint small muted">Klimatizujete víc pokojů? Přidejte je a spočítáme i sestavu multisplit.</p>
     </div>
     <div class="field">
-      <label for="sz-h">Výška stropu</label>
-      <div class="sz__range"><input type="range" id="sz-h" min="2.4" max="4" step="0.1" value="2.6" /><output class="num" id="sz-h-o">2,6 m</output></div>
+      <label for={`${id}-h`}>Výška stropu</label>
+      <div class="sz__range"><input type="range" id={`${id}-h`} class="sz__h" min="2.4" max="4" step="0.1" value="2.6" /><output class="num sz__ho">2,6 m</output></div>
     </div>
-    <fieldset class="field sz__fs"><legend class="legend">Oslunění</legend>
-      <div class="sz__seg">
-        <input type="radio" name="sz-sun" id="sz-s1" value="0.9" /><label for="sz-s1">Sever / stín</label>
-        <input type="radio" name="sz-sun" id="sz-s2" value="1" checked /><label for="sz-s2">Běžné</label>
-        <input type="radio" name="sz-sun" id="sz-s3" value="1.2" /><label for="sz-s3">Jih, velká okna</label>
-        <input type="radio" name="sz-sun" id="sz-s4" value="1.35" /><label for="sz-s4">Podkroví</label>
-      </div>
-    </fieldset>
-    <fieldset class="field sz__fs"><legend class="legend">Počet osob</legend>
-      <div class="sz__seg">
-        <input type="radio" name="sz-p" id="sz-p1" value="1" /><label for="sz-p1">1</label>
-        <input type="radio" name="sz-p" id="sz-p2" value="2" checked /><label for="sz-p2">2</label>
-        <input type="radio" name="sz-p" id="sz-p3" value="4" /><label for="sz-p3">3–4</label>
-        <input type="radio" name="sz-p" id="sz-p4" value="6" /><label for="sz-p4">5 a více</label>
-      </div>
-    </fieldset>
   </div>
   <div class="sz__out" aria-live="polite">
-    <span class="eyebrow">Doporučený chladicí výkon</span>
-    <p class="sz__big num"><span id="sz-kw">2,6</span><small>kW</small></p>
-    <p class="sz__pick" id="sz-pick">Jednotka 2,6 kW</p>
-    <p class="sz__lbl">Řady s tímto výkonem</p>
-    <div class="sz__recs" id="sz-recs"></div>
-    <a class="btn btn--white" id="sz-cta" href="/poptavka/">Poptat tento výkon</a>
-    <p class="sz__note">Orientační výpočet: zhruba 35 W na m³ prostoru, upraveno podle oslunění a počtu osob. Přesný výkon ověří technik při obhlídce.</p>
+    <span class="eyebrow sz__eye">Doporučený chladicí výkon</span>
+    <div class="sz__res"></div>
+    <a class="btn btn--white sz__cta" href="/poptavka/">Poptat tento výkon</a>
+    <p class="sz__note">Orientační výpočet: zhruba 35 W na m³ prostoru, upraveno podle oslunění a typu místnosti. Přesný výkon a kombinaci jednotek ověří technik při obhlídce.</p>
   </div>
 </div>
 
 <script is:inline>
   (function () {
-    var root = document.querySelector('.sz'); if (!root) return;
-    var caps = JSON.parse(root.dataset.caps);
-    var fmt = function (n) { return n.toLocaleString('cs-CZ', { minimumFractionDigits: 1, maximumFractionDigits: 1 }); };
-    var STEPS = [2.6, 3.5, 5.0, 6.3];
-    var a = document.getElementById('sz-area'), h = document.getElementById('sz-h');
-    function calc() {
-      var sun = +root.querySelector('input[name=sz-sun]:checked').value, ppl = +root.querySelector('input[name=sz-p]:checked').value;
-      document.getElementById('sz-area-o').textContent = a.value + ' m²';
-      document.getElementById('sz-h-o').textContent = fmt(+h.value) + ' m';
-      var kw = a.value * h.value * 0.035 * sun + ppl * 0.1;
-      document.getElementById('sz-kw').textContent = fmt(kw);
-      var step = STEPS.find(function (s) { return kw <= s + 0.2; });
-      var pick = document.getElementById('sz-pick'), recs = document.getElementById('sz-recs'), cta = document.getElementById('sz-cta');
-      if (!step) {
-        pick.textContent = 'Více jednotek – navrhneme řešení na míru';
-        recs.innerHTML = '<span class="sz__none">Pro takový prostor rozdělíme výkon do více jednotek.</span>';
-        cta.href = '/poptavka/?plocha=' + a.value; return;
+    document.querySelectorAll('.sz[data-sz]').forEach(function (root) {
+      var D = JSON.parse(root.getAttribute('data-sz'));
+      var TYPES = {
+        obyvak: { n: 'Obývací pokoj', a: 25, p: 3, x: 0 },
+        loznice: { n: 'Ložnice', a: 14, p: 2, x: 0 },
+        detsky: { n: 'Dětský pokoj', a: 12, p: 1, x: 0 },
+        pracovna: { n: 'Pracovna', a: 12, p: 1, x: 0.1 },
+        kuchyn: { n: 'Kuchyň s jídelnou', a: 18, p: 2, x: 0.3 },
+        kancelar: { n: 'Kancelář', a: 20, p: 3, x: 0.2 },
+        jine: { n: 'Jiná místnost', a: 15, p: 2, x: 0 }
+      };
+      var SUN = { sever: ['Sever / stín', 0.9], bezne: ['Běžné', 1], jih: ['Jih, velká okna', 1.2], podkrovi: ['Podkroví', 1.35] };
+      var NEXT = ['loznice', 'detsky', 'pracovna', 'loznice', 'jine', 'jine', 'jine'];
+      var STEPS = [2.6, 3.5, 5.0, 6.3];
+      var CLS = { '2.6': 2.5, '3.5': 3.5, '5': 5.0 };
+      var MAX = 8;
+      var uid = 0;
+      var rooms = D.rooms.map(function (r) { var p = r.split(':'); return { id: ++uid, t: p[0], a: +p[1] || TYPES[p[0]].a, s: 'bezne' }; });
+      var view = 'multi', last = '';
+      function render(html) { if (html !== last) { last = html; res.innerHTML = html; } }
+      var list = root.querySelector('.sz__rooms'), add = root.querySelector('.sz__add'), h = root.querySelector('.sz__h');
+      var res = root.querySelector('.sz__res'), cta = root.querySelector('.sz__cta'), eye = root.querySelector('.sz__eye');
+      var fmt = function (n) { return n.toLocaleString('cs-CZ', { minimumFractionDigits: 1, maximumFractionDigits: 1 }); };
+      var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+
+      function opts(map, sel, label) { return Object.keys(map).map(function (k) { return '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + (label ? map[k][0] : map[k].n) + '</option>'; }).join(''); }
+      function draw() {
+        list.innerHTML = rooms.map(function (r, i) {
+          var pid = root.id + '-r' + r.id;
+          return '<li class="szr" data-id="' + r.id + '">' +
+            '<div class="szr__top"><span class="szr__n">' + (i + 1) + '</span>' +
+            '<select class="szr__t" aria-label="Typ místnosti ' + (i + 1) + '">' + opts(TYPES, r.t) + '</select>' +
+            (rooms.length > 1 ? '<button type="button" class="szr__x" aria-label="Odebrat místnost ' + (i + 1) + '">×</button>' : '') + '</div>' +
+            '<div class="szr__row">' +
+            '<div class="szr__f"><label for="' + pid + '-a">Plocha</label><div class="szr__step">' +
+            '<button type="button" data-d="-1" aria-label="Zmenšit plochu">−</button>' +
+            '<input id="' + pid + '-a" class="szr__a num" type="number" inputmode="numeric" min="5" max="150" value="' + r.a + '" />' +
+            '<span aria-hidden="true">m²</span><button type="button" data-d="1" aria-label="Zvětšit plochu">+</button></div></div>' +
+            '<div class="szr__f"><label for="' + pid + '-s">Oslunění</label><select id="' + pid + '-s" class="szr__s">' + opts(SUN, r.s, true) + '</select></div>' +
+            '</div></li>';
+        }).join('');
+        add.hidden = rooms.length >= MAX;
+        root.querySelector('.sz__hint').hidden = rooms.length > 1;
+        calc();
       }
-      pick.textContent = 'Jednotka ' + fmt(step) + ' kW';
-      var fit = caps.filter(function (c) { return c.kws.some(function (k) { return k >= Math.min(step, kw) - 0.05 && Math.abs(k - step) <= 0.35; }); });
-      recs.innerHTML = fit.map(function (c) { return '<a href="/klimatizace/' + c.id + '/">' + c.name + '</a>'; }).join('');
-      cta.href = '/poptavka/?plocha=' + a.value + '&vykon=' + fmt(step).replace(',', '.');
-    }
-    root.addEventListener('input', calc); calc();
+
+      function need(r) {
+        var t = TYPES[r.t] || TYPES.jine;
+        return r.a * +h.value * 0.035 * SUN[r.s][1] + t.p * 0.1 + t.x;
+      }
+      function step(kw) { for (var i = 0; i < STEPS.length; i++) if (kw <= STEPS[i] + 0.2) return STEPS[i]; return 0; }
+      function fits(kws, st, kw) { return kws.some(function (k) { return k >= Math.min(st, kw) - 0.05 && Math.abs(k - st) <= 0.35; }); }
+      function pickOutdoor(g) {
+        var sum = 0, nd = 0, mx = 0;
+        g.forEach(function (r) { var c = CLS[String(r.st)]; sum += c; nd += r.kw; mx = Math.max(mx, c); });
+        for (var i = 0; i < D.outdoor.length; i++) {
+          var o = D.outdoor[i];
+          if (o.ports >= g.length && sum <= o.maxSum + 1e-9 && mx <= o.maxUnit && o.cool >= 0.85 * nd) return o;
+        }
+        return null;
+      }
+      function plan(rs) {
+        var sep = rs.filter(function (r) { return !r.st || r.st > 5; });
+        var rest = rs.filter(function (r) { return r.st && r.st <= 5; });
+        if (rest.length < 2) return { sys: [], sep: rs };
+        var sorted = rest.slice().sort(function (a, b) { return b.kw - a.kw; });
+        for (var k = Math.ceil(rest.length / 5); k < rest.length; k++) {
+          var groups = []; for (var j = 0; j < k; j++) groups.push([]);
+          sorted.forEach(function (r, i) { var row = Math.floor(i / k), col = row % 2 ? k - 1 - (i % k) : i % k; groups[col].push(r); });
+          var sys = [], solo = [], ok = true;
+          groups.forEach(function (g) {
+            g.sort(function (a, b) { return a.i - b.i; });
+            if (g.length < 2) { solo = solo.concat(g); return; }
+            var o = pickOutdoor(g); if (!o) ok = false; else sys.push({ o: o, rooms: g });
+          });
+          if (ok && sys.length) return { sys: sys, sep: sep.concat(solo).sort(function (a, b) { return a.i - b.i; }) };
+        }
+        return { sys: [], sep: rs };
+      }
+
+      function roomLine(r) {
+        var u = r.st ? fmt(r.st) + ' kW' : 'na míru';
+        return '<li><span>' + esc(TYPES[r.t].n) + ' <small>' + r.a + ' m²</small></span><b class="num">' + u + '</b></li>';
+      }
+      function chips(list) { return list.map(function (c) { return '<a href="/klimatizace/' + c.id + '/">' + esc(c.name) + '</a>'; }).join(''); }
+      function txtRoom(r) { return TYPES[r.t].n + ' ' + r.a + ' m² ' + (r.st ? fmt(r.st) + ' kW' : 'na míru'); }
+
+      function calc() {
+        root.querySelector('.sz__ho').textContent = fmt(+h.value) + ' m';
+        var rs = rooms.map(function (r, i) { var kw = need(r); return { i: i, t: r.t, a: r.a, kw: kw, st: step(kw) }; });
+        var totalA = rs.reduce(function (s, r) { return s + r.a; }, 0);
+        var totalKw = rs.reduce(function (s, r) { return s + r.kw; }, 0);
+        var q = '/poptavka/?mistnosti=' + rs.length + '&plocha=' + totalA;
+
+        if (rs.length === 1) {
+          var r = rs[0];
+          eye.textContent = 'Doporučený chladicí výkon';
+          if (!r.st) {
+            render('<p class="sz__big num">' + fmt(r.kw) + '<small>kW</small></p><p class="sz__pick">Více jednotek – navrhneme řešení na míru</p><p class="sz__none">Pro takový prostor rozdělíme výkon do více jednotek, třeba multisplitem.</p>');
+            cta.textContent = 'Poradit s řešením';
+            cta.href = q + '&reseni=poradit&sestava=' + encodeURIComponent(txtRoom(r)); return;
+          }
+          var fit = D.caps.filter(function (c) { return fits(c.kws, r.st, r.kw); });
+          render('<p class="sz__big num">' + fmt(r.kw) + '<small>kW</small></p><p class="sz__pick">Jednotka ' + fmt(r.st) + ' kW</p>' +
+            '<p class="sz__lbl">Řady s tímto výkonem</p><div class="sz__recs">' + chips(fit) + '</div>');
+          cta.textContent = 'Poptat tento výkon';
+          cta.href = q + '&reseni=split&vykon=' + fmt(r.st).replace(',', '.') + '&sestava=' + encodeURIComponent('Samostatná jednotka: ' + txtRoom(r));
+          return;
+        }
+
+        var p = plan(rs);
+        var canMulti = p.sys.length > 0;
+        if (!canMulti) view = 'split';
+        var tabs = '<div class="sz__view" role="group" aria-label="Typ řešení">' +
+          '<button type="button" data-v="multi" aria-pressed="' + (view === 'multi') + '"' + (canMulti ? '' : ' disabled') + '>Multisplit</button>' +
+          '<button type="button" data-v="split" aria-pressed="' + (view === 'split') + '">Samostatné jednotky</button></div>';
+        var html = tabs, text;
+
+        if (view === 'multi') {
+          var nOut = p.sys.length + p.sep.length;
+          eye.textContent = 'Doporučená sestava';
+          html += '<p class="sz__pick sz__pick--l">' + (nOut === 1 ? 'Jedna venkovní jednotka' : nOut + (nOut < 5 ? ' venkovní jednotky' : ' venkovních jednotek')) + ' pro ' + rs.length + (rs.length < 5 ? ' místnosti' : ' místností') + '</p>';
+          var parts = [];
+          p.sys.forEach(function (s) {
+            html += '<div class="sz__sys"><p class="sz__sysh"><span>Multisplit ' + s.o.family + '</span><b class="num">' + fmt(s.o.cool) + ' kW</b></p><p class="sz__code">Venkovní jednotka ' + s.o.code + '</p><ul class="sz__list">' + s.rooms.map(roomLine).join('') + '</ul></div>';
+            parts.push('Multisplit ' + s.o.family + ' ' + s.o.code + ' (' + fmt(s.o.cool) + ' kW): ' + s.rooms.map(txtRoom).join(', '));
+          });
+          if (p.sep.length) {
+            html += '<div class="sz__sys sz__sys--sep"><p class="sz__sysh"><span>Samostatně</span></p><ul class="sz__list">' + p.sep.map(roomLine).join('') + '</ul></div>';
+            parts.push('Samostatně: ' + p.sep.map(txtRoom).join(', '));
+          }
+          var mrooms = [].concat.apply([], p.sys.map(function (s) { return s.rooms; }));
+          var mfit = D.caps.filter(function (c) { return c.multi.length && mrooms.every(function (r) { return fits(c.multi, r.st, r.kw); }); });
+          html += '<p class="sz__lbl">Vnitřní jednotky z řad</p><div class="sz__recs">' + (mfit.length ? chips(mfit) : '<span class="sz__none">Kombinaci řad navrhneme na míru.</span>') + '</div>';
+          text = parts.join(' | ');
+          cta.textContent = 'Poptat tuto sestavu';
+          cta.href = q + '&reseni=multisplit&sestava=' + encodeURIComponent(text);
+        } else {
+          eye.textContent = 'Samostatné jednotky';
+          html += '<p class="sz__pick sz__pick--l">' + (rs.length < 5 ? rs.length + ' vnitřní + ' + rs.length + ' venkovní jednotky' : rs.length + ' vnitřních + ' + rs.length + ' venkovních jednotek') + '</p>' +
+            '<div class="sz__sys"><ul class="sz__list">' + rs.map(roomLine).join('') + '</ul></div>' +
+            '<p class="sz__none">Každá místnost má vlastní venkovní jednotku. Hodí se, když jsou místnosti daleko od sebe nebo na různých stranách domu.' + (canMulti ? '' : ' Pro tuto kombinaci místností je to vhodnější řešení.') + '</p>';
+          text = 'Samostatné jednotky: ' + rs.map(txtRoom).join(', ');
+          cta.textContent = 'Poptat tuto sestavu';
+          cta.href = q + '&reseni=split&sestava=' + encodeURIComponent(text);
+        }
+        html += '<p class="sz__tot">Celkem ' + totalA + ' m², potřeba zhruba <b class="num">' + fmt(totalKw) + ' kW</b></p>';
+        render(html);
+      }
+
+      list.addEventListener('input', function (e) {
+        var li = e.target.closest('.szr'); if (!li) return;
+        var r = rooms.find(function (x) { return x.id === +li.dataset.id; });
+        if (e.target.classList.contains('szr__a')) { var v = parseInt(e.target.value, 10); if (v > 0) r.a = Math.min(150, Math.max(5, v)); }
+        calc();
+      });
+      list.addEventListener('change', function (e) {
+        var li = e.target.closest('.szr'); if (!li) return;
+        var r = rooms.find(function (x) { return x.id === +li.dataset.id; });
+        if (e.target.classList.contains('szr__t')) { r.t = e.target.value; r.a = TYPES[r.t].a; draw(); return; }
+        if (e.target.classList.contains('szr__s')) r.s = e.target.value;
+        if (e.target.classList.contains('szr__a')) e.target.value = r.a;
+        calc();
+      });
+      list.addEventListener('click', function (e) {
+        var li = e.target.closest('.szr'); if (!li) return;
+        var r = rooms.find(function (x) { return x.id === +li.dataset.id; });
+        var b = e.target.closest('button'); if (!b) return;
+        if (b.classList.contains('szr__x')) { rooms = rooms.filter(function (x) { return x !== r; }); draw(); add.focus(); return; }
+        if (b.dataset.d) { r.a = Math.min(150, Math.max(5, r.a + (+b.dataset.d))); li.querySelector('.szr__a').value = r.a; calc(); }
+      });
+      add.addEventListener('click', function () {
+        if (rooms.length >= MAX) return;
+        var t = NEXT[rooms.length - 1] || 'jine';
+        rooms.push({ id: ++uid, t: t, a: TYPES[t].a, s: 'bezne' });
+        if (rooms.length === 2) view = 'multi';
+        draw();
+        var last = list.querySelector('.szr:last-child .szr__t'); if (last) last.focus();
+      });
+      res.addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (!b || b.disabled) return; view = b.dataset.v; calc(); });
+      h.addEventListener('input', calc);
+      draw();
+    });
   })();
 </script>
 
 <style>
-  .sz { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: stretch; }
-  .sz__panel { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: clamp(20px, 3vw, 30px); display: grid; gap: 20px; }
-  .sz__fs { border: 0; padding: 0; margin: 0; }
+  .sz { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .sz__panel { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: clamp(18px, 3vw, 30px); display: grid; gap: 16px; }
+  .sz__head p { margin: 0; }
+  .sz__rooms { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .sz__rooms :global(.szr) { border: 1px solid var(--line); border-radius: var(--r); padding: 14px; background: var(--teal-tint); display: grid; gap: 12px; }
+  .sz__rooms :global(.szr__top) { display: flex; align-items: center; gap: 10px; }
+  .sz__rooms :global(.szr__n) { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--teal); color: #fff; display: grid; place-items: center; font: 700 0.85rem var(--f-display); }
+  .sz__rooms :global(select) { min-height: 44px; border: 1px solid #c9d7da; border-radius: 10px; padding: 0 12px; font: inherit; font-size: 0.95rem; background: #fff; color: var(--ink); width: 100%; min-width: 0; }
+  .sz__rooms :global(.szr__t) { flex: 1; font-family: var(--f-display); font-weight: 700; }
+  .sz__rooms :global(.szr__x) { flex: none; width: 44px; height: 44px; border: 1px solid #c9d7da; border-radius: 10px; background: #fff; font-size: 1.4rem; line-height: 1; color: var(--ink-2); cursor: pointer; }
+  .sz__rooms :global(.szr__x:hover) { border-color: var(--err); color: var(--err); }
+  .sz__rooms :global(.szr__row) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .sz__rooms :global(.szr__f) { display: grid; gap: 4px; min-width: 0; }
+  .sz__rooms :global(.szr__f label) { font-size: 0.82rem; font-weight: 600; color: var(--ink-2); }
+  .sz__rooms :global(.szr__step) { display: flex; align-items: center; border: 1px solid #c9d7da; border-radius: 10px; background: #fff; min-height: 44px; overflow: hidden; }
+  .sz__rooms :global(.szr__step button) { flex: none; width: 40px; align-self: stretch; border: 0; background: none; font-size: 1.25rem; color: var(--teal-ink); cursor: pointer; }
+  .sz__rooms :global(.szr__step button:hover) { background: var(--teal-soft); }
+  .sz__rooms :global(.szr__step input) { flex: 1; min-width: 0; width: 100%; border: 0; text-align: right; font: 700 1rem var(--f-display); padding: 0 4px; -moz-appearance: textfield; appearance: textfield; background: none; }
+  .sz__rooms :global(.szr__step input::-webkit-outer-spin-button), .sz__rooms :global(.szr__step input::-webkit-inner-spin-button) { -webkit-appearance: none; margin: 0; }
+  .sz__rooms :global(.szr__step span) { font-size: 0.9rem; color: var(--ink-2); padding-right: 2px; }
+  .sz__addrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .sz__hint { margin: 0; flex: 1 1 220px; }
+  .sz__hint[hidden] { display: none; }
+  .sz__add { justify-self: start; border: 1px dashed var(--teal); background: #fff; color: var(--teal-ink); border-radius: 999px; padding: 0.6em 1.2em; min-height: 44px; font: 700 0.95rem var(--f-display); cursor: pointer; }
+  .sz__add:hover { background: var(--teal-soft); }
+  .sz__add[hidden] { display: none; }
   .sz__range { display: flex; align-items: center; gap: 14px; }
   .sz__range input { flex: 1; accent-color: var(--teal); min-width: 0; height: 28px; }
   .sz__range output { font: 800 1.05rem var(--f-display); min-width: 5.5ch; text-align: right; }
-  .sz__seg { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-  .sz__seg input { position: absolute; opacity: 0; pointer-events: none; }
-  .sz__seg label { border: 1px solid #c9d7da; border-radius: 999px; padding: 0.5em 1em; font-size: 0.92rem; cursor: pointer; min-height: 40px; display: inline-flex; align-items: center; }
-  .sz__seg input:checked + label { background: var(--teal); border-color: var(--teal); color: #fff; }
-  .sz__seg input:focus-visible + label { outline: 3px solid var(--teal); outline-offset: 2px; }
-  .sz__out { background: linear-gradient(160deg, var(--teal), var(--teal-dark)); color: #fff; border-radius: var(--r-l); padding: clamp(22px, 3vw, 32px); display: flex; flex-direction: column; gap: 10px; }
+  .sz__out { position: sticky; top: 90px; background: linear-gradient(160deg, var(--teal), var(--teal-dark)); color: #fff; border-radius: var(--r-l); padding: clamp(22px, 3vw, 32px); display: flex; flex-direction: column; gap: 10px; }
   .sz__out .eyebrow { color: #c8f3f1; margin: 0; }
-  .sz__big { font: 800 clamp(3rem, 7vw, 4.2rem)/1 var(--f-display); margin: 0; }
-  .sz__big small { font-size: 0.4em; margin-left: 6px; }
-  .sz__pick { font: 700 1.15rem var(--f-display); margin: 0; }
-  .sz__lbl { margin: 8px 0 0; font-size: 0.88rem; opacity: 0.85; }
-  .sz__recs { display: flex; flex-wrap: wrap; gap: 8px; }
-  .sz__recs :global(a) { color: #fff; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.55); border-radius: 999px; padding: 0.35em 0.9em; font: 600 0.9rem var(--f-display); }
-  .sz__recs :global(a:hover) { background: rgba(255, 255, 255, 0.15); }
-  .sz__recs :global(.sz__none) { font-size: 0.92rem; }
-  .sz__out .btn { align-self: flex-start; margin-top: 8px; }
-  .sz__note { font-size: 0.8rem; opacity: 0.75; margin: auto 0 0; padding-top: 10px; }
-  @media (max-width: 860px) { .sz { grid-template-columns: 1fr; } }
+  .sz__res { display: flex; flex-direction: column; gap: 10px; }
+  .sz__res :global(p) { margin: 0; }
+  .sz__res :global(.sz__big) { font: 800 clamp(3rem, 7vw, 4.2rem)/1 var(--f-display); }
+  .sz__res :global(.sz__big small) { font-size: 0.4em; margin-left: 6px; }
+  .sz__res :global(.sz__pick) { font: 700 1.15rem var(--f-display); }
+  .sz__res :global(.sz__pick--l) { font-size: 1.35rem; line-height: 1.2; }
+  .sz__res :global(.sz__lbl) { margin-top: 4px; font-size: 0.88rem; opacity: 0.85; }
+  .sz__res :global(.sz__recs) { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sz__res :global(.sz__recs a) { color: #fff; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.55); border-radius: 999px; padding: 0.35em 0.9em; font: 600 0.9rem var(--f-display); }
+  .sz__res :global(.sz__recs a:hover) { background: rgba(255, 255, 255, 0.15); }
+  .sz__res :global(.sz__none) { font-size: 0.92rem; opacity: 0.9; }
+  .sz__res :global(.sz__view) { display: inline-flex; background: rgba(0, 0, 0, 0.18); border-radius: 999px; padding: 4px; gap: 4px; align-self: flex-start; max-width: 100%; }
+  .sz__res :global(.sz__view button) { border: 0; background: none; color: #fff; font: 700 0.88rem var(--f-display); border-radius: 999px; padding: 0.5em 1em; min-height: 38px; cursor: pointer; }
+  .sz__res :global(.sz__view button[aria-pressed='true']) { background: #fff; color: var(--teal-ink); }
+  .sz__res :global(.sz__view button:disabled) { opacity: 0.45; cursor: not-allowed; }
+  .sz__res :global(.sz__sys) { background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 14px; padding: 12px 14px; }
+  .sz__res :global(.sz__sysh) { display: flex; justify-content: space-between; gap: 10px; font: 800 1.05rem var(--f-display); }
+  .sz__res :global(.sz__code) { font-size: 0.8rem; opacity: 0.8; }
+  .sz__res :global(.sz__list) { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+  .sz__res :global(.sz__list li) { display: flex; justify-content: space-between; gap: 10px; font-size: 0.94rem; border-top: 1px solid rgba(255, 255, 255, 0.18); padding-top: 4px; }
+  .sz__res :global(.sz__list small) { opacity: 0.75; margin-left: 4px; }
+  .sz__res :global(.sz__tot) { font-size: 0.9rem; opacity: 0.9; }
+  .sz__out .btn { align-self: flex-start; margin-top: 6px; }
+  .sz__note { font-size: 0.8rem; opacity: 0.75; margin: 0; padding-top: 8px; }
+  @media (max-width: 860px) { .sz { grid-template-columns: 1fr; } .sz__out { position: static; } }
+  @media (max-width: 380px) { .sz__rooms :global(.szr__row) { grid-template-columns: 1fr; } }
 </style>
