@@ -18,10 +18,10 @@ const notes: Record<string, string> = {
   <div class="sf__grid">
     {series.map((s) => <SeriesCard s={s} />)}
     <aside class="sf__multi" data-reveal>
-      <span class="eyebrow">Více místností</span>
+      <span class="eyebrow">Multisplit</span>
       <h3>Klimatizujete víc pokojů?</h3>
-      <p>Navrhneme vám řešení na míru, třeba jednu venkovní jednotku pro více místností. Stačí napsat, kolik pokojů a jak velkých chcete chladit.</p>
-      <a class="btn" href="/poptavka/?vice=1">Poradit s řešením</a>
+      <p>Jedna venkovní jednotka pro dvě až pět místností a v každé vlastní teplota. Na fasádě tak nemáte jednotek zbytečně moc.</p>
+      <div class="btns"><a class="btn" href="/klimatizace/multisplit/">Multisplit Hisense</a><a class="btn btn--ghost" href="/klimatizace/multisplit/#vypocet">Spočítat sestavu</a></div>
     </aside>
   </div>
 </div>
@@ -51,7 +51,7 @@ const notes: Record<string, string> = {
   .sf__multi { display: flex; flex-direction: column; justify-content: center; gap: 6px; background: var(--teal-soft); border: 1px solid var(--teal); border-radius: var(--r-l); padding: 30px 26px; }
   .sf__multi h3 { font-size: 1.45rem; }
   .sf__multi p { color: var(--ink-2); }
-  .sf__multi .btn { align-self: flex-start; }
+  .sf__multi .btns { margin-top: 6px; }
   @media (max-width: 1024px) { .sf__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 640px) { .sf__grid { grid-template-columns: 1fr; } }
 </style>

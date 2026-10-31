@@ -34,6 +34,7 @@ export const site = {
 
 export const nav = [
   { href: '/klimatizace/', label: 'Klimatizace' },
+  { href: '/klimatizace/multisplit/', label: 'Multisplit' },
   { href: '/chytre-funkce/', label: 'Chytré funkce' },
   { href: '/jak-to-probiha/', label: 'Montáž' },
   { href: '/blog/', label: 'Poradna' },

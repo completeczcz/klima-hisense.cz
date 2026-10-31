@@ -90,6 +90,6 @@ Rozhodování si můžete zjednodušit třemi otázkami:
 2. **Bude jednotka v ložnici?** Vyplatí se nejtišší řady od 18 až 19 dB(A).
 3. **Jak velká je místnost?** Pro prostory nad 50 m² je tu Wings Comfort s výkonem 6,3 kW.
 
-Výkon podle plochy pomůže určit článek [Jaký výkon klimatizace zvolit](/blog/jaky-vykon-klimatizace/). Pokud chcete klimatizovat více místností, navrhneme řešení na míru. Často stačí jedna venkovní jednotka pro několik vnitřních.
+Výkon podle plochy pomůže určit článek [Jaký výkon klimatizace zvolit](/blog/jaky-vykon-klimatizace/). Pokud chcete klimatizovat více místností, často stačí jedna venkovní jednotka pro několik vnitřních, tedy [multisplit](/klimatizace/multisplit/). Do něj lze zapojit řady Air Master, Energy Pro X, Uni Pure a Wings Comfort.
 
 Nevíte, která řada je pro vás ta pravá? Pošlete nám [nezávaznou poptávku](/poptavka/). Ozveme se do 1 pracovního dne, doporučíme vhodnou řadu a montáž zajistí prověřená partnerská firma z vašeho okolí.

@@ -14,7 +14,7 @@ faq:
   - q: "Co je režim +8 °C?"
     a: "Je to temperování: klimatizace drží v místnosti stálých +8 °C, aby objekt nevymrzl. Hodí se pro chatu nebo byt, kam jezdíte jen občas. Mají ho řady Air Master a Hi-Smart."
   - q: "Může klimatizace vytopit celý dům?"
-    a: "Klimatizace vytápí místnost, ve které je vnitřní jednotka. Pro více místností navrhneme řešení na míru, například jednu venkovní jednotku pro několik vnitřních."
+    a: "Klimatizace vytápí místnost, ve které je vnitřní jednotka. Pro dvě až pět místností se hodí multisplit, tedy jedna venkovní jednotka pro několik vnitřních. Topí až do venkovní teploty −20 °C."
 related: ["energeticke-tridy-seer-scop", "klimatizace-do-rodinneho-domu", "chytra-klimatizace-aplikace-connectlife"]
 ---
 
@@ -62,7 +62,7 @@ Ještě praktičtější je to s připojením k Wi-Fi. Den před příjezdem př
 - **Chata a rekreační objekt.** Temperování na +8 °C a ovládání na dálku z mobilu.
 - **Jedno zařízení na celý rok.** V létě chladí, v zimě topí.
 
-Klimatizace vytápí místnost, ve které je vnitřní jednotka. Pokud chcete topit nebo chladit ve více místnostech, navrhneme řešení na míru, například jednu venkovní jednotku pro několik vnitřních.
+Klimatizace vytápí místnost, ve které je vnitřní jednotka. Pokud chcete topit nebo chladit ve více místnostech, hodí se [multisplit](/klimatizace/multisplit/): jedna venkovní jednotka pro dvě až pět vnitřních, která topí až do venkovní teploty −20 °C.
 
 ## Kterou řadu vybrat pro topení
 

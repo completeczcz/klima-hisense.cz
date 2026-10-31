@@ -10,7 +10,7 @@ faq:
   - q: "Které místnosti v domě klimatizovat jako první?"
     a: "Nejčastěji ložnice v podkroví a obývací pokoj s velkými okny na jih nebo západ. V těchto místnostech je přehřívání v létě nejvýraznější."
   - q: "Stačí jedna venkovní jednotka pro více místností?"
-    a: "Často ano. Všechny nástěnné řady Hisense lze zapojit i do sestavy s jednou venkovní jednotkou pro více vnitřních. Vhodnost posoudí technik při obhlídce a řešení navrhneme na míru."
+    a: "Často ano. Multisplit Hisense připojí k jedné venkovní jednotce dvě až pět vnitřních. Lze do něj zapojit řady Air Master, Energy Pro X, Uni Pure a Wings Comfort. Vhodnost posoudí technik při obhlídce."
   - q: "Může klimatizace v domě i topit?"
     a: "Ano. Všechny řady Hisense chladí i topí. Nejvýkonnější řady topí až do venkovní teploty −22 °C a v přechodném období mohou doplnit nebo částečně nahradit hlavní zdroj tepla."
   - q: "Bude venkovní jednotka rušit sousedy?"
@@ -67,11 +67,11 @@ Pokud chcete klimatizací topit častěji, sledujte hodnotu SCOP. Řady Air Mast
 
 Řady lze v jednom domě kombinovat. Do obývacího pokoje se může hodit výkonnější jednotka a do dětského pokoje menší. Přehled všech modelů najdete na stránce [Klimatizace Hisense](/klimatizace/).
 
-## Více místností: řešení na míru
+## Více místností: multisplit, nebo samostatné jednotky
 
-Pokud chcete klimatizovat několik místností, existuje víc cest. Každá místnost může mít vlastní venkovní jednotku. Často je ale praktičtější **jedna venkovní jednotka pro více vnitřních**. Na fasádě tak visí méně techniky a trasy potrubí bývají jednodušší.
+Pokud chcete klimatizovat několik místností, existuje víc cest. Každá místnost může mít vlastní venkovní jednotku. Často je ale praktičtější **jedna venkovní jednotka pro více vnitřních**, tedy [multisplit](/klimatizace/multisplit/). Hisense ho nabízí pro dvě až pět místností. Na fasádě tak visí méně techniky a trasy potrubí bývají jednodušší.
 
-Které řešení je pro váš dům nejlepší, záleží na počtu místností, jejich výkonu a vzdálenostech. Proto ho vždy navrhujeme na míru. V [poptávce](/poptavka/) stačí uvést, kolik místností a jak velkých chcete klimatizovat. Partnerská montážní firma vše ověří při obhlídce.
+Které řešení je pro váš dům nejlepší, záleží na počtu místností, jejich výkonu a vzdálenostech. Orientační sestavu si spočítáte v [kalkulačce multisplitu](/klimatizace/multisplit/#vypocet), srovnání obou cest najdete v článku [Multisplit, nebo samostatné klimatizace?](/blog/multisplit-nebo-samostatne-klimatizace/). V [poptávce](/poptavka/) pak stačí uvést, kolik místností a jak velkých chcete klimatizovat. Partnerská montážní firma vše ověří při obhlídce.
 
 ## Umístění venkovní jednotky a hluk vůči sousedům
 

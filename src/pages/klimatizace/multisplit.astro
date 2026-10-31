@@ -1,0 +1,261 @@
+---
+import Base from '../../layouts/Base.astro';
+import Sizer from '../../components/Sizer.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { series } from '../../data/products';
+import { families, multiSeries, otherIndoor, multiFaq, outdoor } from '../../data/multisplit';
+
+const kw = (n: number) => n.toLocaleString('cs-CZ', { minimumFractionDigits: 1 });
+const compat = series.filter((s) => multiSeries[s.id]);
+const single = series.filter((s) => !multiSeries[s.id]);
+const examples = [
+  { title: 'Byt 2+kk', rooms: [['Obývací pokoj', '25 m²', '2,6 kW'], ['Ložnice', '14 m²', '2,6 kW']], out: 'DUAL 4,1 kW', code: '2AMW42U4RGC' },
+  { title: 'Byt 3+kk', rooms: [['Obývací pokoj', '30 m²', '3,5 kW'], ['Ložnice', '14 m²', '2,6 kW'], ['Dětský pokoj', '12 m²', '2,6 kW']], out: 'TRIAL 6,3 kW', code: '3AMW62U4RJC' },
+  { title: 'Rodinný dům', rooms: [['Obývací pokoj', '35 m²', '3,5 kW'], ['Ložnice', '16 m²', '2,6 kW'], ['Dětský pokoj', '12 m²', '2,6 kW'], ['Dětský pokoj', '12 m²', '2,6 kW']], out: 'QUADRI 8,0 kW', code: '4AMW81U4RJC' },
+];
+const compare: [string, string, string][] = [
+  ['Venkovní jednotky na fasádě', 'Jedna pro 2–5 místností', 'Jedna za každou místnost'],
+  ['Souhlas SVJ a vzhled domu', 'Snazší, jen jedna jednotka', 'Více jednotek na fasádě'],
+  ['Teplota v každé místnosti', 'Ano, každá jednotka zvlášť', 'Ano'],
+  ['Chlazení a topení zároveň', 'Ne, všechny jednotky v jednom režimu', 'Ano, každá místnost jinak'],
+  ['Při poruše venkovní jednotky', 'Nefungují všechny místnosti', 'Ostatní místnosti fungují dál'],
+  ['Vzdálené místnosti', 'Délka potrubí je omezená', 'Bez omezení'],
+  ['Pozdější rozšíření', 'Jen při volné přípojce a výkonu', 'Kdykoli další jednotka'],
+  ['Kdy se hodí', 'Byt, patro domu, místnosti blízko sebe', 'Místnosti daleko od sebe, nezávislost'],
+];
+const minBranch = Math.min(...outdoor.map((o) => o.branch));
+const maxBranch = Math.max(...outdoor.map((o) => o.branch));
+const minTotal = Math.min(...outdoor.map((o) => o.total));
+const maxTotal = Math.max(...outdoor.map((o) => o.total));
+---
+<Base
+  title="Multisplit Hisense: klimatizace do více místností"
+  description="Multisplit Hisense: jedna venkovní jednotka pro 2 až 5 místností, v každé vlastní teplota. Spočítejte si sestavu a pošlete nezávaznou poptávku s montáží."
+  crumbs={[{ name: 'Klimatizace', href: '/klimatizace/' }, { name: 'Multisplit', href: '/klimatizace/multisplit/' }]}
+>
+  <section class="section ms-hero">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Multisplit Hisense</span>
+        <h1>Klimatizace do více místností s jednou venkovní jednotkou</h1>
+        <p class="lead">Chladíte obývák, ložnici i dětský pokoj, ale na fasádě máte jedinou venkovní jednotku. V každé místnosti si nastavíte vlastní teplotu.</p>
+        <ul class="ticks">
+          <li>2 až 5 vnitřních jednotek na jednu venkovní</li>
+          <li>Každá místnost s vlastním výkonem i ovládáním</li>
+          <li>V zimě topí až do venkovní teploty −20 °C</li>
+        </ul>
+        <div class="btns">
+          <a class="btn" href="#vypocet">Spočítat sestavu</a>
+          <a class="btn btn--ghost" href="/poptavka/?reseni=multisplit&mistnosti=2">Nezávazná poptávka</a>
+        </div>
+      </div>
+      <figure class="ms-diagram" data-reveal>
+        <svg viewBox="0 0 580 410" role="img" aria-labelledby="ms-d-t">
+          <title id="ms-d-t">Schéma multisplitu: jedna venkovní jednotka propojená se třemi vnitřními jednotkami v obýváku, ložnici a dětském pokoji</title>
+          <path class="d-house" d="M30 170 L230 40 L430 170 V370 H30 Z" />
+          <line class="d-floor" x1="30" y1="270" x2="430" y2="270" />
+          <line class="d-floor" x1="230" y1="170" x2="230" y2="270" />
+          <path class="d-pipe" d="M470 300 H458 V174 H130 V188" />
+          <path class="d-pipe" d="M470 314 H450 V197 H380" />
+          <path class="d-pipe" d="M470 328 H442 V289 H390" />
+          <g class="d-in"><rect x="80" y="186" width="100" height="22" rx="8" /><line x1="92" y1="202" x2="168" y2="202" /></g>
+          <g class="d-in"><rect x="280" y="186" width="100" height="22" rx="8" /><line x1="292" y1="202" x2="368" y2="202" /></g>
+          <g class="d-in"><rect x="270" y="278" width="120" height="22" rx="8" /><line x1="282" y1="294" x2="378" y2="294" /></g>
+          <text class="d-lbl" x="130" y="240">Ložnice</text><text class="d-kw" x="130" y="258">2,6 kW</text>
+          <text class="d-lbl" x="330" y="240">Dětský pokoj</text><text class="d-kw" x="330" y="258">2,6 kW</text>
+          <text class="d-lbl" x="200" y="330">Obývací pokoj</text><text class="d-kw" x="200" y="350">3,5 kW</text>
+          <g class="d-out"><rect x="470" y="282" width="78" height="70" rx="8" /><circle cx="500" cy="317" r="20" /><circle cx="500" cy="317" r="5" /><line x1="530" y1="298" x2="540" y2="298" /><line x1="530" y1="306" x2="540" y2="306" /><line x1="530" y1="314" x2="540" y2="314" /></g>
+          <text class="d-lbl d-lbl--out" x="509" y="378">TRIAL</text><text class="d-kw" x="509" y="396">venkovní jednotka</text>
+        </svg>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section section--tint" id="jak-funguje">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Jak to funguje</span>
+        <h2>Jedna venkovní jednotka, každá místnost po svém</h2>
+        <p class="lead">Venkovní jednotka má několik samostatných okruhů. Každý vede k jedné vnitřní jednotce, takže každá místnost dostane jen tolik chladu nebo tepla, kolik zrovna potřebuje.</p>
+      </div>
+      <div class="grid grid--4">
+        <div class="card ms-b" data-reveal><b>2–5</b><h3>místností</h3><p>DUAL pro dvě, TRIAL pro tři, QUADRI pro čtyři a PENTA až pro pět místností.</p></div>
+        <div class="card ms-b" data-reveal><b>1</b><h3>jednotka na fasádě</h3><p>Méně techniky na domě. U bytových domů snazší souhlas SVJ.</p></div>
+        <div class="card ms-b" data-reveal><b>°C</b><h3>teplota v každém pokoji</h3><p>Každá vnitřní jednotka má vlastní ovladač i ovládání v aplikaci ConnectLife.</p></div>
+        <div class="card ms-b" data-reveal><b>−20 °C</b><h3>topí i v zimě</h3><p>Vyhřívání kompresoru, režim udržování +8 °C a u vybraných modelů vyhřívaná vana.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="vypocet-sekce">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Kalkulačka sestavy</span>
+        <h2>Spočítejte si multisplit pro svůj byt nebo dům</h2>
+        <p class="lead">Upravte místnosti podle sebe. Ukážeme výkon pro každou místnost, vhodnou venkovní jednotku a srovnání se samostatnými klimatizacemi.</p>
+      </div>
+      <Sizer id="vypocet" rooms={['obyvak:30', 'loznice:14', 'detsky:12']} />
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Příklady sestav</span>
+        <h2>Jak multisplit vypadá v praxi</h2>
+        <p class="lead">Orientační sestavy pro běžné místnosti s výškou stropu 2,6 m. Konkrétní návrh připravíme podle vašich místností.</p>
+      </div>
+      <div class="grid grid--3">
+        {examples.map((e) => (
+          <div class="card ms-ex" data-reveal>
+            <h3>{e.title}</h3>
+            <ul>{e.rooms.map((r) => <li><span>{r[0]} <small>{r[1]}</small></span><b class="num">{r[2]}</b></li>)}</ul>
+            <p class="ms-ex__out"><span>Venkovní jednotka</span><b>{e.out}</b><small>{e.code}</small></p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="venkovni">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Venkovní jednotky</span>
+        <h2>Podle počtu místností</h2>
+        <p class="lead">Všechny venkovní jednotky Hisense multisplit mají plně invertorový kompresor, chladivo R32 a energetickou třídu A++ v chlazení a A+ v topení.</p>
+      </div>
+      <div class="grid grid--4">
+        {families.map((f) => (
+          <div class="card ms-fam" data-reveal>
+            <span class="ms-fam__rooms"><b>{f.rooms}</b> {f.rooms === 5 ? 'místností' : 'místnosti'}</span>
+            <h3>{f.name}</h3>
+            <p class="ms-fam__kw num">{f.kw}</p>
+            <p>{f.text}</p>
+          </div>
+        ))}
+      </div>
+      <div class="ms-tech">
+        <div><dt>Chlazení</dt><dd>od −15 °C do +50 °C venku</dd></div>
+        <div><dt>Topení</dt><dd>od −20 °C do +24 °C venku</dd></div>
+        <div><dt>Potrubí k jedné místnosti</dt><dd>až {minBranch}–{maxBranch} m podle modelu</dd></div>
+        <div><dt>Potrubí celkem</dt><dd>až {minTotal}–{maxTotal} m, převýšení až 15 m</dd></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint" id="vnitrni">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Vnitřní jednotky</span>
+        <h2>V každé místnosti jiná řada, pokud chcete</h2>
+        <p class="lead">Do jednoho multisplitu můžete kombinovat různé řady a výkony. Do ložnice tichou Air Master, do obýváku Energy Pro X v černé.</p>
+      </div>
+      <div class="grid grid--4">
+        {compat.map((s) => (
+          <a class="card ms-in" href={`/klimatizace/${s.id}/`} data-reveal>
+            <img src={s.images.bila ?? s.images.cerna} alt={`Vnitřní jednotka Hisense ${s.name}`} width="480" height="200" loading="lazy" />
+            <h3>{s.name}</h3>
+            <p>{s.tagline}</p>
+            <p class="ms-in__kw">Do multisplitu: <b class="num">{multiSeries[s.id].map(kw).join(' · ')} kW</b></p>
+          </a>
+        ))}
+      </div>
+      {single.length > 0 && <p class="small muted ms-note">{single.map((s) => s.name).join(', ')} se dodává jen jako samostatná klimatizace s vlastní venkovní jednotkou.</p>}
+      <h3 class="ms-sub">Pro kanceláře a náročnější interiéry</h3>
+      <div class="grid grid--4">
+        {otherIndoor.map((o) => (
+          <div class="card ms-oth"><h4>{o.name}</h4><p>{o.text}</p><span class="chip">{o.kw}</span></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="srovnani">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Multisplit, nebo samostatné klimatizace?</span>
+        <h2>Srovnání na rovinu</h2>
+        <p class="lead">Multisplit není vždy lepší volba. Podle rozmístění místností vám doporučíme, co se u vás vyplatí víc.</p>
+      </div>
+      <div class="tbl ms-cmp">
+        <table>
+          <thead><tr><th scope="col"></th><th scope="col">Multisplit</th><th scope="col">Samostatné klimatizace</th></tr></thead>
+          <tbody>{compare.map((r) => <tr><th scope="row">{r[0]}</th><td data-l="Multisplit">{r[1]}</td><td data-l="Samostatné">{r[2]}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <p class="ms-more">Podrobněji v článku <a href="/blog/multisplit-nebo-samostatne-klimatizace/">Multisplit, nebo samostatné klimatizace?</a></p>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap"><Faq items={multiFaq} /></div>
+  </section>
+
+  <CtaBand heading="Navrhneme vám multisplit na míru" text="Napište, kolik místností chcete klimatizovat a jak jsou velké. Doporučíme venkovní i vnitřní jednotky a montáž zajistí prověřený partner z vašeho regionu." href="/poptavka/?reseni=multisplit&mistnosti=2" />
+</Base>
+
+<style>
+  .ms-hero { padding-top: 28px; }
+  .ms-hero .ticks { margin-bottom: 1.6em; }
+  .ms-diagram { margin: 0; background: var(--teal-tint); border: 1px solid var(--line); border-radius: var(--r-l); padding: clamp(14px, 3vw, 28px); }
+  .ms-diagram svg { display: block; width: 100%; height: auto; }
+  .d-house { fill: #fff; stroke: var(--ink-3); stroke-width: 2.5; stroke-linejoin: round; }
+  .d-floor { stroke: var(--line); stroke-width: 2.5; }
+  .d-pipe { fill: none; stroke: var(--teal); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  .d-in rect { fill: #fff; stroke: var(--teal-ink); stroke-width: 2.5; }
+  .d-in line { stroke: var(--teal); stroke-width: 2; }
+  .d-out rect { fill: #fff; stroke: var(--ink); stroke-width: 2.5; }
+  .d-out circle { fill: none; stroke: var(--ink-3); stroke-width: 2; }
+  .d-out line { stroke: var(--ink-3); stroke-width: 2; }
+  .d-lbl { font: 700 15px var(--f-display); fill: var(--ink); text-anchor: middle; }
+  .d-kw { font: 600 13px var(--f-body); fill: var(--teal-ink); text-anchor: middle; }
+  .ms-b { padding: 22px; }
+  .ms-b b { display: block; font: 800 2rem/1 var(--f-display); color: var(--teal-ink); margin-bottom: 8px; }
+  .ms-b h3 { font-size: 1.05rem; margin-bottom: 0.3em; }
+  .ms-b p { margin: 0; color: var(--ink-2); font-size: 0.93rem; }
+  .ms-ex { padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .ms-ex h3 { margin: 0; }
+  .ms-ex ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .ms-ex li { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 6px; font-size: 0.95rem; }
+  .ms-ex li small { color: var(--ink-3); margin-left: 4px; }
+  .ms-ex__out { margin: auto 0 0; background: var(--teal-soft); border-radius: 10px; padding: 12px 14px; display: grid; }
+  .ms-ex__out span { font-size: 0.8rem; color: var(--ink-2); }
+  .ms-ex__out b { font: 800 1.15rem var(--f-display); color: var(--teal-dark); }
+  .ms-ex__out small { color: var(--ink-2); font-size: 0.8rem; }
+  .ms-fam { padding: 22px; display: flex; flex-direction: column; gap: 4px; }
+  .ms-fam__rooms { color: var(--ink-2); font-size: 0.9rem; }
+  .ms-fam__rooms b { font: 800 1.6rem var(--f-display); color: var(--teal); }
+  .ms-fam h3 { font-size: 1.4rem; margin: 0; letter-spacing: 0.04em; }
+  .ms-fam__kw { font: 700 0.98rem var(--f-display); color: var(--teal-ink); margin: 0; }
+  .ms-fam p:last-child { margin: 6px 0 0; color: var(--ink-2); font-size: 0.93rem; }
+  .ms-tech { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin: 24px 0 0; }
+  .ms-tech div { background: #fff; padding: 14px 16px; }
+  .ms-tech dt { font: 700 0.8rem var(--f-display); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); }
+  .ms-tech dd { margin: 2px 0 0; font-weight: 600; }
+  .ms-in { padding: 18px; text-decoration: none; color: var(--ink); display: flex; flex-direction: column; gap: 4px; transition: border-color 0.2s, box-shadow 0.2s; }
+  .ms-in:hover { border-color: var(--teal); box-shadow: var(--shadow); }
+  .ms-in img { width: 100%; height: 110px; object-fit: contain; margin-bottom: 8px; }
+  .ms-in h3 { margin: 0; }
+  .ms-in p { margin: 0; color: var(--ink-2); font-size: 0.92rem; }
+  .ms-in__kw { margin-top: auto !important; padding-top: 8px; }
+  .ms-in__kw b { color: var(--teal-ink); }
+  .ms-note { margin: 16px 0 0; }
+  .ms-sub { margin: 36px 0 14px; }
+  .ms-oth { padding: 18px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  .ms-oth h4 { margin: 0; font: 700 1rem var(--f-display); }
+  .ms-oth p { margin: 0; color: var(--ink-2); font-size: 0.92rem; }
+  .ms-more { margin: 18px 0 0; }
+  #srovnani th[scope='row'] { font-weight: 600; white-space: nowrap; }
+  #srovnani td { min-width: 200px; }
+  @media (max-width: 900px) { .ms-tech { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .ms-tech { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) {
+    .ms-cmp thead { display: none; }
+    .ms-cmp tr { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); }
+    .ms-cmp tbody tr:last-child { border-bottom: 0; }
+    .ms-cmp th[scope='row'] { grid-column: 1 / -1; background: var(--teal-soft); color: var(--teal-dark); white-space: normal !important; border: 0; }
+    .ms-cmp td { min-width: 0 !important; border: 0; font-size: 0.9rem; }
+    .ms-cmp td::before { content: attr(data-l); display: block; font: 700 0.72rem var(--f-display); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); }
+  }
+</style>

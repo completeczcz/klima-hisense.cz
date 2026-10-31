@@ -1,7 +1,7 @@
 ---
 import { site } from '../data/site';
-interface Props { heading?: string; text?: string }
-const { heading = 'Chcete klimatizaci Hisense včetně montáže?', text = `Napište nám, co potřebujete. Ozveme se ${site.responseTime}, doporučíme vhodnou řadu a výkon a montáž zajistí prověřený partner z vašeho regionu.` } = Astro.props;
+interface Props { heading?: string; text?: string; href?: string }
+const { href = '/poptavka/', heading = 'Chcete klimatizaci Hisense včetně montáže?', text = `Napište nám, co potřebujete. Ozveme se ${site.responseTime}, doporučíme vhodnou řadu a výkon a montáž zajistí prověřený partner z vašeho regionu.` } = Astro.props;
 ---
 <section class="cta-band">
   <div class="wrap cta-band__in" data-reveal>
@@ -10,7 +10,7 @@ const { heading = 'Chcete klimatizaci Hisense včetně montáže?', text = `Napi
       <p>{text}</p>
     </div>
     <div class="cta-band__btns">
-      <a class="btn btn--white" href="/poptavka/">Nezávazná poptávka</a>
+      <a class="btn btn--white" href={href}>Nezávazná poptávka</a>
       <a class="cta-band__tel" href={site.phoneHref}>nebo volejte {site.phone}</a>
     </div>
   </div>

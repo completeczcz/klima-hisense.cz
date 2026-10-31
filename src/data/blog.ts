@@ -20,6 +20,7 @@ const byPost: Record<string, string> = {
   'jak-probiha-montaz-klimatizace': '/img/interier-lampa.jpg',
   'udrzba-a-cisteni-klimatizace': '/img/wings-comfort.webp',
   'klimatizace-do-rodinneho-domu': '/img/interier-zima.jpg',
+  'multisplit-nebo-samostatne-klimatizace': '/img/interier-lampa.jpg',
 };
 export const postImage = (slug: string) => byPost[slug] ?? '/img/hero-loznice.jpg';
 export const isPhoto = (src: string) => src.endsWith('.jpg');

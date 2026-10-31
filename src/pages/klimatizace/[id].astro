@@ -4,6 +4,7 @@ import FeatureGrid from '../../components/FeatureGrid.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import { series, colors, useLabels, mainImage, type Series } from '../../data/products';
 import { site } from '../../data/site';
+import { multiSeries } from '../../data/multisplit';
 
 export function getStaticPaths() {
   return series.map((s) => ({ params: { id: s.id }, props: { s } }));
@@ -11,6 +12,7 @@ export function getStaticPaths() {
 const { s } = Astro.props as { s: Series };
 const colorKeys = (Object.keys(s.images) as ('bila' | 'cerna')[]).filter((k) => s.images[k]);
 const others = series.filter((o) => o.id !== s.id);
+const multi = multiSeries[s.id];
 const url = new URL(`/klimatizace/${s.id}/`, site.url).href;
 const productSchema = {
   '@context': 'https://schema.org',
@@ -114,6 +116,11 @@ const productSchema = {
         ))}
       </div>
       <p class="small muted">Velikost místnosti je orientační, přesný výkon doporučí technik při obhlídce. Součástí je bezdrátový dálkový ovladač.</p>
+      {multi ? (
+        <p class="pd-multi"><b>Více místností?</b> Vnitřní jednotky {s.name} ve výkonech {multi.map((k) => k.toLocaleString('cs-CZ', { minimumFractionDigits: 1 })).join(', ')} kW lze zapojit i do <a href="/klimatizace/multisplit/">multisplitu</a>, tedy na jednu venkovní jednotku pro dvě až pět místností.</p>
+      ) : (
+        <p class="pd-multi"><b>Více místností?</b> {s.name} se dodává jako samostatná klimatizace. Pro více místností s jednou venkovní jednotkou zvolte <a href="/klimatizace/multisplit/">multisplit</a> s řadami Air Master, Energy Pro X, Uni Pure nebo Wings Comfort.</p>
+      )}
 
       <details class="spec">
         <summary>Technické parametry <span>datasheet</span></summary>
@@ -155,6 +162,7 @@ const productSchema = {
 </script>
 
 <style>
+  .pd-multi { background: var(--teal-tint); border: 1px solid var(--teal-soft); border-left: 4px solid var(--teal); border-radius: var(--r); padding: 12px 16px; margin: 14px 0 0; }
   .pd { background: radial-gradient(70% 90% at 85% 10%, var(--teal-soft), transparent 60%), linear-gradient(180deg, var(--bg-2), #fff); border-bottom: 1px solid var(--line); }
   .pd__in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(28px, 5vw, 64px); align-items: center; padding-block: 28px clamp(48px, 6vw, 80px); }
   .pd h1 { margin-bottom: 0.15em; }

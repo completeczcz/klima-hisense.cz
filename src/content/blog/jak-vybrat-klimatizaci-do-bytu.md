@@ -80,6 +80,6 @@ U základní řady Hi-Smart je Wi-Fi modul volitelný, ostatní řady ovládán�
 - **Wings Comfort** je osvědčená volba do obýváku. Jako jediná řada má i výkon 6,3 kW pro velké místnosti.
 - **Hi-Smart** je základní řada, vhodná hlavně na letní chlazení.
 
-Srovnání všech řad najdete v [přehledu klimatizací Hisense](/klimatizace/). Chcete klimatizovat víc pokojů najednou? Pro více místností navrhneme řešení na míru, například jednu venkovní jednotku pro několik vnitřních.
+Srovnání všech řad najdete v [přehledu klimatizací Hisense](/klimatizace/). Chcete klimatizovat víc pokojů najednou? Pak se hodí [multisplit](/klimatizace/multisplit/), tedy jedna venkovní jednotka pro několik vnitřních. V bytovém domě to navíc usnadní souhlas SVJ, protože na fasádě visí jen jedna jednotka.
 
 Nevíte si rady s výkonem nebo umístěním? Pošlete nám [nezávaznou poptávku](/poptavka/). Ozveme se do 1 pracovního dne a montáž zajistí prověřená partnerská firma z vašeho okolí. Na klimatizace Hisense platí záruka 3 roky.

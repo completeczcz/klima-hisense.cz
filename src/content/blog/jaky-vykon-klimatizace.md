@@ -82,6 +82,6 @@ Do protáhlých prostor nebo do bytu s několika pokoji je často lepší víc m
 
 Tabulka vám pomůže udělat si představu, finální výkon ale určí technik. Při obhlídce posoudí orientaci oken, izolaci, výšku stropu i způsob, jak místnost používáte. Zároveň navrhne umístění vnitřní a venkovní jednotky.
 
-U větších prostor nebo když chcete klimatizovat několik pokojů, navrhneme řešení na míru. Často jde o jednu venkovní jednotku pro více vnitřních. Více o výběru najdete v článku [Jak vybrat klimatizaci do bytu](/blog/jak-vybrat-klimatizaci-do-bytu/) a v [přehledu řad Hisense](/klimatizace/).
+U větších prostor nebo když chcete klimatizovat několik pokojů, navrhneme řešení na míru. Často jde o [multisplit](/klimatizace/multisplit/), tedy jednu venkovní jednotku pro více vnitřních. Výkon pro každou místnost i vhodnou venkovní jednotku orientačně spočítá naše kalkulačka. Více o výběru najdete v článku [Jak vybrat klimatizaci do bytu](/blog/jak-vybrat-klimatizaci-do-bytu/) a v [přehledu řad Hisense](/klimatizace/).
 
 Nejste si jistí, jaký výkon zvolit? Napište nám v [nezávazné poptávce](/poptavka/) plochu místnosti a pár slov o ní. Ozveme se do 1 pracovního dne a doporučíme vhodnou jednotku.
