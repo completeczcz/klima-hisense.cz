@@ -61,8 +61,8 @@ export const uses: UsePage[] = [
     description: 'Klimatizace Hisense do rodinného domu: chlazení podkroví, topení v přechodném období, multisplit pro více místností. Spočítejte si sestavu a pošlete poptávku.',
     h1: 'Klimatizace do rodinného domu',
     lead: 'V domě klimatizace zchladí rozpálené podkroví v létě a na jaře i na podzim úsporně přitopí. Pro více místností stačí jedna venkovní jednotka.',
-    image: '/img/interier-zima.jpg',
-    imageAlt: 'Útulný obývací pokoj rodinného domu s klimatizací Hisense',
+    image: '/img/dum-rodina.jpg',
+    imageAlt: 'Rodina před moderním rodinným domem',
     picks: [
       { id: 'air-master', why: 'SCOP až 5,1 a topení do −22 °C. Nejlepší volba, pokud chcete klimatizací i často topit.' },
       { id: 'energy-pro-x', why: 'A+++ v chlazení i topení a prémiový design do obytných místností.' },
