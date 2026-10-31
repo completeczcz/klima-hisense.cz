@@ -1,9 +1,0 @@
-# Cloudflare Pages – klima-hisense.cz
-name = "klima-hisense"
-pages_build_output_dir = "./dist"
-compatibility_date = "2026-10-01"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "klima-hisense-db"
-database_id = "2110a9d3-d68e-48d1-a55b-f4de60cc0a67"

@@ -30,7 +30,7 @@ const c = site.company;
     </div>
     <div>
       <p class="ftr__h">Provozovatel</p>
-      <p>{c.name}<br />{c.address}<br />IČO {c.ico}</p>
+      <p>{c.name}<br />Sídlo: {c.address}<br />Kancelář: {c.office}<br />IČO {c.ico}, DIČ {c.dic}<br /><span class="ftr__reg">Spisová značka {c.register}</span></p>
       <ul>
         <li><a href="/ochrana-osobnich-udaju/">Ochrana osobních údajů</a></li>
         <li><a href="/cookies/">Zásady cookies</a></li>
@@ -53,6 +53,7 @@ const c = site.company;
   .ftr a, .ftr button { color: #dbe6ea; text-decoration: none; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-align: left; }
   .ftr a:hover, .ftr button:hover { color: #fff; text-decoration: underline; }
   .ftr__contact a { font: 700 1.02rem var(--f-display); color: #fff; }
+  .ftr__reg { font-size: 0.8rem; opacity: 0.75; }
   .ftr__legal { border-top: 1px solid rgba(255, 255, 255, 0.12); margin-top: 36px; padding-top: 20px; font-size: 0.8rem; opacity: 0.75; }
   .ftr__legal p { margin: 0; }
   @media (max-width: 900px) { .ftr__grid { grid-template-columns: 1fr 1fr; } }

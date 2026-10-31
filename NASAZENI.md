@@ -4,7 +4,9 @@
 - Repozitář a Cloudflare projekt zatím nejsou založené. Postup níže.
 - Poptávky a e-maily z info@klima-hisense.cz mají chodit na ps@completecz.cz.
 
-Web je statický (Astro) a běží na **Cloudflare Pages**. Formuláře zpracovávají **Pages Functions** (`functions/api/…`) a poptávky se ukládají do databáze **Cloudflare D1**. Žádný server ke správě.
+Web je statický (Astro) a běží jako **Cloudflare Worker se statickými soubory** (stejně jako Kalkulace COMPLETE). Formulář zpracovává Worker (`worker/index.js`), poptávky se ukládají do **Cloudflare D1** a upozornění chodí e‑mailem přes **Cloudflare Email Routing** (vazba `EMAIL`). Nastavení je v `wrangler.jsonc`.
+
+**E‑maily o poptávkách:** odesílatel `poptavky@klima-hisense.cz` (proměnná `MAIL_FROM`), příjemce `ps@completecz.cz` (`NOTIFY_TO`). Na doméně musí být zapnutý Email Routing a příjemce musí být v Email Routing → Destination addresses ve stavu *Verified*.
 
 ## 1. Propojení s GitHubem (jednorázově, ~5 min)
 

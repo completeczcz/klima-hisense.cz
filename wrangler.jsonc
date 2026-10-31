@@ -1,0 +1,25 @@
+{
+  // Cloudflare Worker se statickými soubory – klima-hisense.cz (stejné uspořádání jako Kalkulace COMPLETE)
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "klima-hisense-web",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+    "not_found_handling": "404-page"
+  },
+  // odesílání upozornění na poptávky přes Cloudflare Email Routing
+  "send_email": [
+    { "name": "EMAIL" }
+  ],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "klima-hisense-db", "database_id": "2110a9d3-d68e-48d1-a55b-f4de60cc0a67" }
+  ],
+  "vars": {
+    "NOTIFY_TO": "ps@completecz.cz",
+    "MAIL_FROM": "poptavky@klima-hisense.cz"
+  },
+  "observability": { "enabled": true }
+}

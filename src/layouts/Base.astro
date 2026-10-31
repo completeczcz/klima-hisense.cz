@@ -37,7 +37,7 @@ const orgSchema = {
   address: { '@type': 'PostalAddress', streetAddress: 'Vyskočilova 1410/1', postalCode: '140 00', addressLocality: 'Praha 4', addressCountry: 'CZ' },
   areaServed: { '@type': 'Country', name: 'Česká republika' },
   brand: { '@type': 'Brand', name: 'Hisense' },
-  parentOrganization: { '@type': 'Organization', name: site.company.name, identifier: site.company.ico, url: site.company.web },
+  parentOrganization: { '@type': 'Organization', name: site.company.name, identifier: site.company.ico, vatID: site.company.dic, url: site.company.web, address: { '@type': 'PostalAddress', streetAddress: 'Legerova 1853/24', postalCode: '120 00', addressLocality: 'Praha 2', addressCountry: 'CZ' } },
   openingHoursSpecification: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '16:00' },
 };
 const crumbSchema = crumbs.length

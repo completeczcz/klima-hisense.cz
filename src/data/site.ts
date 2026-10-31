@@ -15,9 +15,12 @@ export const site = {
   company: {
     name: 'COMPLETE CZ, spol. s r.o.',
     ico: '26707829',
-    address: 'Vyskočilova 1410/1, 140 00 Praha 4',
-    building: 'Budova Life – C',
-    register: 'Městským soudem v Praze', // TODO: doplnit spisovou značku (oddíl C, vložka …)
+    dic: 'CZ26707829',
+    // sídlo a fakturační adresa podle obchodního rejstříku
+    address: 'Legerova 1853/24, Nové Město, 120 00 Praha 2',
+    // kancelář (kontaktní adresa)
+    office: 'Vyskočilova 1410/1, Budova Life – C, 140 00 Praha 4',
+    register: 'C 88727 vedená u Městského soudu v Praze',
     web: 'https://www.completecz.cz',
   },
   // Měření – vyplnit ID; prázdné = skript se nenačte.

@@ -19,7 +19,8 @@ const c = site.company;
           <div class="card kt__card"><span>Telefon</span><a href={site.phoneHref}>{site.phone}</a><small>{site.hours}</small></div>
           <div class="card kt__card"><span>E‑mail</span><a href={`mailto:${site.email}`}>{site.email}</a><small>odpověď {site.responseTime}</small></div>
           <div class="card kt__card"><span>Kontaktní osoba</span><b>{site.contactPerson.name}</b><small>{site.contactPerson.role}</small></div>
-          <div class="card kt__card"><span>Provozovatel</span><b>{c.name}</b><small>{c.address}<br />{c.building}<br />IČO {c.ico}</small></div>
+          <div class="card kt__card"><span>Kancelář</span><b>{c.name}</b><small>{c.office}</small></div>
+          <div class="card kt__card"><span>Fakturační údaje</span><b>{c.name}</b><small>Sídlo: {c.address}<br />IČO {c.ico}, DIČ {c.dic}<br />Spisová značka {c.register}</small></div>
         </div>
       </div>
       <LeadForm heading="Napište nám" />
