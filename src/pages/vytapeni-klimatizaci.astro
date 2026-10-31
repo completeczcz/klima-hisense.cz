@@ -1,0 +1,150 @@
+---
+import Base from '../layouts/Base.astro';
+import HeatingCalc from '../components/HeatingCalc.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { seriesStats } from '../data/stats';
+const fmt = (n: number) => n.toLocaleString('cs-CZ', { minimumFractionDigits: 1 });
+const minus = (n: number) => String(n).replace('-', '−');
+const extra: Record<string, { vana: boolean; plus8: boolean }> = {
+  'air-master': { vana: true, plus8: true },
+  'energy-pro-x': { vana: true, plus8: true },
+  'uni-pure': { vana: true, plus8: true },
+  'wings-comfort': { vana: false, plus8: true },
+  'hi-smart': { vana: false, plus8: true },
+};
+const faq = [
+  { q: 'Je topení klimatizací levnější než přímotop?', a: 'Ano. Klimatizace je tepelné čerpadlo, takže z jedné kilowatthodiny elektřiny dodá za topnou sezonu v průměru 4 až 5 kWh tepla podle řady. Elektrický přímotop dodá právě 1 kWh. Spotřeba elektřiny je proto několikanásobně nižší.' },
+  { q: 'Topí klimatizace i při mrazu?', a: 'Ano. Air Master, Energy Pro X a Uni Pure topí až do venkovní teploty −22 °C, Wings Comfort do −20 °C a Hi‑Smart do −15 °C. Při velkých mrazech topný výkon postupně klesá, proto technik při návrhu počítá s rezervou.' },
+  { q: 'Proč klimatizace v zimě občas přestane foukat teplo?', a: 'Venkovní jednotka při topení v mrazu namrzá a klimatizace ji proto čas od času krátce odmrazí. Na pár minut přestane foukat teplý vzduch, pak pokračuje. Je to normální provoz.' },
+  { q: 'Můžu klimatizací vytopit celý byt?', a: 'Klimatizace topí v místnosti, kde je vnitřní jednotka. Pro více místností se hodí multisplit s jednou venkovní jednotkou. Jestli klimatizace stačí jako hlavní zdroj tepla, posoudí technik podle tepelných ztrát bytu.' },
+  { q: 'Co je režim +8 °C?', a: 'Temperování: klimatizace udržuje v místnosti stálých +8 °C, aby objekt nevymrzl. Hodí se pro chatu, chalupu nebo byt, kam jezdíte jen občas. Umějí ho všechny nástěnné řady Hisense.' },
+];
+---
+<Base
+  title="Vytápění klimatizací: úsporné topení s Hisense"
+  description="Vytápění klimatizací Hisense: z 1 kWh elektřiny až 5 kWh tepla, topení do −22 °C, temperování chaty na +8 °C. Kdy se topení klimatizací vyplatí a jak ho navrhnout."
+  crumbs={[{ name: 'Vytápění klimatizací', href: '/vytapeni-klimatizaci/' }]}
+>
+  <section class="section vt-hero">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Tepelné čerpadlo vzduch–vzduch</span>
+        <h1>Vytápění klimatizací</h1>
+        <p class="lead">Klimatizace Hisense v zimě topí. Teplo bere z venkovního vzduchu, takže z jedné kilowatthodiny elektřiny dodá za sezonu až pětkrát víc tepla než elektrický přímotop.</p>
+        <ul class="ticks">
+          <li>Topí až do venkovní teploty −22 °C</li>
+          <li>Rychlé teplo na jaře a na podzim bez zapínání kotle</li>
+          <li>Temperování chaty na +8 °C</li>
+        </ul>
+        <div class="btns">
+          <a class="btn" href="/poptavka/">Nezávazná poptávka</a>
+          <a class="btn btn--ghost" href="#uspora">Kolik ušetříte</a>
+        </div>
+      </div>
+      <div class="photo vt-photo"><img src="/img/interier-zima.jpg" alt="Obývací pokoj v zimě vytápěný klimatizací Hisense" width="1200" height="1049" fetchpriority="high" /></div>
+    </div>
+  </section>
+
+  <section class="section section--tint" id="uspora">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Úspora energie</span>
+        <h2>Z 1 kWh elektřiny až 5 kWh tepla</h2>
+        <p class="lead">Vyberte řadu a podívejte se, kolik tepla dodá a o kolik méně elektřiny spotřebuje než přímotop.</p>
+      </div>
+      <HeatingCalc />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Jak to funguje</span>
+        <h2>Teplo z venkovního vzduchu i v mrazu</h2>
+        <p class="lead">I mrazivý vzduch obsahuje teplo. Klimatizace ho pomocí chladiva a kompresoru „přečerpá“ dovnitř, podobně jako lednice přečerpává teplo ven.</p>
+      </div>
+      <ol class="vt-steps">
+        <li data-reveal><b>1</b><h3>Venkovní jednotka</h3><p>Chladivo ve výměníku je chladnější než venkovní vzduch, a tak z něj odebírá teplo, i když je venku pod nulou.</p></li>
+        <li data-reveal><b>2</b><h3>Kompresor</h3><p>Invertorový kompresor chladivo stlačí. Tím vzroste jeho teplota, podobně jako se zahřeje hustilka při pumpování.</p></li>
+        <li data-reveal><b>3</b><h3>Vnitřní jednotka</h3><p>Teplé chladivo předá teplo do místnosti a ventilátor ho rozvede. Chladivo se vrací ven a koloběh pokračuje.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Řady Hisense</span>
+        <h2>Do jakých mrazů topí</h2>
+      </div>
+      <div class="tbl">
+        <table>
+          <thead><tr><th scope="col">Řada</th><th scope="col" class="c">Topí do</th><th scope="col" class="c">SCOP až</th><th scope="col" class="c">Vyhřívaná vana</th><th scope="col" class="c">Režim +8 °C</th></tr></thead>
+          <tbody>
+            {seriesStats.map((s) => (
+              <tr>
+                <th scope="row"><a href={`/klimatizace/${s.id}/`}>{s.name}</a></th>
+                <td class="c num">{minus(s.heatMin)} °C</td>
+                <td class="c num">{fmt(s.scop)}</td>
+                <td class="c">{extra[s.id].vana ? <span class="dot-yes" aria-label="ano"></span> : <span class="dot-no" aria-label="ne">–</span>}</td>
+                <td class="c">{extra[s.id].plus8 ? <span class="dot-yes" aria-label="ano"></span> : <span class="dot-no" aria-label="ne">–</span>}</td>
+              </tr>
+            ))}
+            <tr><th scope="row"><a href="/klimatizace/multisplit/">Multisplit</a></th><td class="c num">−20 °C</td><td class="c">podle sestavy</td><td class="c">vybrané modely</td><td class="c"><span class="dot-yes" aria-label="ano"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted vt-note">Údaje podle katalogu Hisense 2026/2027. Vyhřívaná vana brání zamrznutí kondenzátu ve venkovní jednotce při topení v mrazu.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Kdy se vyplatí</span>
+        <h2>Kde topení klimatizací dává největší smysl</h2>
+      </div>
+      <div class="grid grid--4">
+        <div class="card vt-c" data-reveal><h3>Jaro a podzim</h3><p>Chladná rána a teplá odpoledne. Místnost vytopíte za pár minut a kotel nemusíte zapínat.</p></div>
+        <div class="card vt-c" data-reveal><h3>Byty s přímotopy</h3><p>Kde se topí elektřinou, ušetří klimatizace nejvíc. Spotřebuje zlomek elektřiny přímotopu.</p></div>
+        <div class="card vt-c" data-reveal><h3>Chaty a chalupy</h3><p>Režim +8 °C udrží objekt nad bodem mrazu a před příjezdem ho přes aplikaci vytopíte.</p></div>
+        <div class="card vt-c" data-reveal><h3>Podkroví a přístavby</h3><p>Místnosti, kam nedosáhne ústřední topení nebo kde v létě potřebujete i chladit.</p></div>
+      </div>
+      <div class="vt-tips">
+        <h3>Na co myslet při návrhu</h3>
+        <ul class="ticks">
+          <li><b>Topný výkon:</b> pro topení se výkon navrhuje podle tepelných ztrát místnosti. U starších domů a v horských oblastech s rezervou.</li>
+          <li><b>Umístění venkovní jednotky:</b> při topení z ní odkapává kondenzát. Technik zajistí odvod, aby v zimě nevznikal led na chodníku.</li>
+          <li><b>Více místností:</b> pro celý byt nebo patro se hodí <a href="/klimatizace/multisplit/">multisplit</a>, který topí do −20 °C.</li>
+          <li><b>Úspora:</b> sledujte hodnotu SCOP. Čím vyšší, tím méně elektřiny na stejné teplo. Vysvětlení najdete v článku <a href="/blog/energeticke-tridy-seer-scop/">Energetické třídy, SEER a SCOP</a>.</li>
+        </ul>
+        <p>Podrobně o topení v článku <a href="/blog/topeni-klimatizaci/">Topení klimatizací: jak funguje a kdy se vyplatí</a> a o podpoře v článku <a href="/blog/dotace-na-klimatizaci/">Je na klimatizaci dotace?</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap"><Faq items={faq} /></div>
+  </section>
+
+  <CtaBand heading="Chcete klimatizací i topit?" text="Napište nám, které místnosti chcete vytápět. Navrhneme řadu a výkon s rezervou pro zimu a montáž zajistí prověřený partner z vašeho regionu." />
+</Base>
+
+<style>
+  .vt-hero { padding-top: 28px; }
+  .vt-photo { aspect-ratio: 8 / 7; }
+  .vt-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; counter-reset: s; }
+  .vt-steps li { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 22px; }
+  .vt-steps b { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, #ff9f43, #f05a28); color: #fff; font: 800 1.1rem var(--f-display); margin-bottom: 12px; }
+  .vt-steps h3 { font-size: 1.1rem; }
+  .vt-steps p { margin: 0; color: var(--ink-2); font-size: 0.95rem; }
+  .vt-note { margin: 12px 0 0; }
+  .vt-c { padding: 20px; }
+  .vt-c h3 { font-size: 1.05rem; }
+  .vt-c p { margin: 0; color: var(--ink-2); font-size: 0.94rem; }
+  .vt-tips { margin-top: 36px; max-width: 820px; }
+  .vt-tips .ticks li { display: block; padding-left: 32px; position: relative; }
+  .vt-tips .ticks li::before { position: absolute; left: 0; top: 0; }
+  @media (max-width: 760px) { .vt-steps { grid-template-columns: 1fr; } }
+</style>

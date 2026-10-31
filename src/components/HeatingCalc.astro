@@ -1,0 +1,73 @@
+---
+import { seriesStats } from '../data/stats';
+const fmt = (n: number) => n.toLocaleString('cs-CZ', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+---
+<div class="hc" data-hc>
+  <div class="hc__tabs" role="group" aria-label="Vyberte řadu">
+    {seriesStats.map((s, i) => <button type="button" data-s={s.id} aria-pressed={i === 0 ? 'true' : 'false'}>{s.name}</button>)}
+  </div>
+  {seriesStats.map((s, i) => (
+    <div class="hc__panel" data-p={s.id} hidden={i !== 0}>
+      <div class="hc__flow">
+        <div class="hc__in"><span class="hc__k num">1</span><span>kWh elektřiny</span></div>
+        <span class="hc__arr" aria-hidden="true">→</span>
+        <div class="hc__out"><span class="hc__k num">{fmt(s.scop)}</span><span>kWh tepla za topnou sezonu</span></div>
+      </div>
+      <div class="hc__bars">
+        <div class="hc__bar"><span class="hc__bl">Elektrický přímotop</span><span class="hc__track"><span style={`width:${(1 / 5.5) * 100}%`} class="hc__fill hc__fill--grey"></span></span><b class="num">1,0 kWh</b></div>
+        <div class="hc__bar"><span class="hc__bl">Hisense {s.name}</span><span class="hc__track"><span style={`width:${(s.scop / 5.5) * 100}%`} class="hc__fill"></span></span><b class="num">{fmt(s.scop)} kWh</b></div>
+      </div>
+      <dl class="hc__facts">
+        <div><dt>Úspora elektřiny proti přímotopu</dt><dd class="num">až {Math.round((1 - 1 / s.scop) * 100)} %</dd></div>
+        <div><dt>Topí do venkovní teploty</dt><dd class="num">{String(s.heatMin).replace('-', '−')} °C</dd></div>
+        <div><dt>Sezonní topný faktor</dt><dd class="num">SCOP {fmt(s.scop)}</dd></div>
+      </dl>
+    </div>
+  ))}
+  <p class="hc__note">SCOP je průměrný poměr dodaného tepla a spotřebované elektřiny za topnou sezonu podle evropské normy (průměrné klima). Nejvyšší hodnota řady podle katalogu výrobce, skutečná spotřeba závisí na domě, počasí a nastavení.</p>
+</div>
+
+<script is:inline>
+  document.querySelectorAll('[data-hc]').forEach(function (root) {
+    root.querySelector('.hc__tabs').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-s]'); if (!b) return;
+      root.querySelectorAll('[data-s]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      root.querySelectorAll('[data-p]').forEach(function (p) { p.hidden = p.dataset.p !== b.dataset.s; });
+    });
+  });
+</script>
+
+<style>
+  .hc { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: clamp(18px, 3vw, 28px); display: grid; gap: 18px; }
+  .hc__tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hc__tabs::-webkit-scrollbar { display: none; }
+  .hc__tabs button { flex: none; font: 600 0.92rem var(--f-display); background: #fff; color: var(--ink); border: 1px solid #c9d7da; border-radius: 999px; padding: 0.5em 1.05em; min-height: 42px; cursor: pointer; }
+  .hc__tabs button[aria-pressed='true'] { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .hc__panel { display: grid; gap: 18px; }
+  .hc__panel[hidden] { display: none; }
+  .hc__flow { display: grid; grid-template-columns: 1fr auto 1.4fr; align-items: center; gap: 14px; }
+  .hc__in, .hc__out { border-radius: 16px; padding: 16px 18px; display: grid; gap: 2px; }
+  .hc__in { background: var(--bg-2); }
+  .hc__out { background: linear-gradient(150deg, #ff9f43, #f05a28); color: #fff; }
+  .hc__k { font: 800 clamp(2.2rem, 5vw, 3rem)/1 var(--f-display); }
+  .hc__in span:last-child, .hc__out span:last-child { font-size: 0.9rem; }
+  .hc__arr { font-size: 1.8rem; color: var(--ink-3); }
+  .hc__bars { display: grid; gap: 8px; }
+  .hc__bar { display: grid; grid-template-columns: minmax(120px, 180px) minmax(0, 1fr) 70px; gap: 12px; align-items: center; font-size: 0.92rem; }
+  .hc__track { height: 14px; background: var(--bg-2); border-radius: 999px; overflow: hidden; }
+  .hc__fill { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #ff9f43, #f05a28); }
+  .hc__fill--grey { background: #b7c6cb; }
+  .hc__bar b { text-align: right; font-family: var(--f-display); }
+  .hc__facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin: 0; }
+  .hc__facts div { background: #fff; padding: 12px 14px; }
+  .hc__facts dt { font-size: 0.8rem; color: var(--ink-2); }
+  .hc__facts dd { margin: 0; font: 800 1.25rem var(--f-display); color: var(--ink); }
+  .hc__note { margin: 0; font-size: 0.82rem; color: var(--ink-2); }
+  @media (max-width: 640px) {
+    .hc__flow { grid-template-columns: 1fr; }
+    .hc__arr { transform: rotate(90deg); justify-self: center; line-height: 1; }
+    .hc__facts { grid-template-columns: 1fr; }
+    .hc__bar { grid-template-columns: 1fr 64px; gap: 4px 10px; }
+    .hc__track { grid-column: 1 / -1; grid-row: 2; }
+  }
+</style>

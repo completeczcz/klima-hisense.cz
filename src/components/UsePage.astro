@@ -1,0 +1,136 @@
+---
+import Base from '../layouts/Base.astro';
+import Sizer from './Sizer.astro';
+import Faq from './Faq.astro';
+import CtaBand from './CtaBand.astro';
+import { series, mainImage } from '../data/products';
+import { seriesStats } from '../data/stats';
+import { uses, type UsePage } from '../data/uses';
+import { getCollection } from 'astro:content';
+interface Props { u: UsePage }
+const { u } = Astro.props;
+const objekt = u.id === 'loznice' ? 'byt' : u.id;
+const picks = u.picks.map((p) => ({ s: series.find((s) => s.id === p.id)!, st: seriesStats.find((x) => x.id === p.id)!, why: p.why }));
+const all = await getCollection('blog');
+const posts = u.articles.map((id) => all.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => Boolean(p));
+const others = uses.filter((x) => x.id !== u.id);
+const minus = (n: number) => String(n).replace('-', '−');
+---
+<Base title={u.title} description={u.description} crumbs={[{ name: 'Klimatizace', href: '/klimatizace/' }, { name: u.h1, href: `/klimatizace/${u.slug}/` }]}>
+  <section class="section up-hero">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Klimatizace Hisense · {u.label}</span>
+        <h1>{u.h1}</h1>
+        <p class="lead">{u.lead}</p>
+        <div class="btns">
+          <a class="btn" href={`/poptavka/?objekt=${objekt}`}>Nezávazná poptávka</a>
+          <a class="btn btn--ghost" href="#vypocet">Spočítat výkon</a>
+        </div>
+      </div>
+      <div class="photo up-photo"><img src={u.image} alt={u.imageAlt} width="1200" height="900" fetchpriority="high" /></div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Doporučené řady</span>
+        <h2>Které klimatizace Hisense se hodí</h2>
+      </div>
+      <div class="grid up-picks">
+        {picks.map(({ s, st, why }, i) => (
+          <article class="card up-pick" data-reveal>
+            {i === 0 && <span class="tag up-pick__tag">Nejčastější volba</span>}
+            <a class="up-pick__img" href={`/klimatizace/${s.id}/`}><img src={mainImage(s)} alt={`Klimatizace Hisense ${s.name}`} width="900" height="330" loading="lazy" /></a>
+            <h3><a href={`/klimatizace/${s.id}/`}>{s.name}</a></h3>
+            <p>{why}</p>
+            <dl>
+              <div><dt>Hlučnost od</dt><dd class="num">{st.noise} dB(A)</dd></div>
+              <div><dt>Topí do</dt><dd class="num">{minus(st.heatMin)} °C</dd></div>
+              <div><dt>Výkony</dt><dd class="num">{s.stats.find((x) => x.label === 'Výkony')?.value ?? ''}</dd></div>
+            </dl>
+            <div class="btns"><a class="btn btn--sm" href={`/poptavka/?rada=${s.id}&objekt=${objekt}`}>Poptat</a><a class="btn btn--sm btn--ghost" href={`/klimatizace/${s.id}/`}>Detail</a></div>
+          </article>
+        ))}
+      </div>
+      <p class="up-more">Nevíte si rady? Vyzkoušejte <a href="/klimatizace/#pruvodce">průvodce výběrem</a> nebo <a href="/klimatizace/#srovnani">srovnání všech řad</a>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Na co myslet</span>
+        <h2>Než si klimatizaci pořídíte</h2>
+      </div>
+      <div class="grid grid--4">
+        {u.tips.map((t) => <div class="card up-tip" data-reveal><h3>{t.title}</h3><p>{t.text}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Výpočet výkonu</span>
+        <h2>Jaký výkon potřebujete</h2>
+        <p class="lead">{u.sizing}</p>
+      </div>
+      <Sizer id="vypocet" rooms={u.rooms} />
+      <p class="up-multi"><b>Více místností?</b> {u.multi} <a href="/klimatizace/multisplit/">Multisplit Hisense →</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap"><Faq items={u.faq} /></div>
+  </section>
+
+  {posts.length > 0 && (
+    <section class="section section--alt">
+      <div class="wrap">
+        <div class="head"><span class="eyebrow">Poradna</span><h2>Přečtěte si také</h2></div>
+        <div class="grid grid--3">
+          {posts.map((p) => (
+            <a class="card up-post" href={`/blog/${p.id}/`}>
+              <h3>{p.data.h1 ?? p.data.title}</h3>
+              <p>{p.data.perex}</p>
+              <span>Číst článek →</span>
+            </a>
+          ))}
+        </div>
+        <p class="up-others">Další použití: {others.map((o, i) => <>{i > 0 && ' · '}<a href={`/klimatizace/${o.slug}/`}>{o.label}</a></>)} · <a href="/klimatizace/multisplit/">Více místností</a></p>
+      </div>
+    </section>
+  )}
+
+  <CtaBand href={`/poptavka/?objekt=${objekt}`} />
+</Base>
+
+<style>
+  .up-hero { padding-top: 28px; }
+  .up-photo { aspect-ratio: 4 / 3; }
+  .up-picks { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .up-pick { position: relative; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .up-pick__tag { position: absolute; top: 14px; left: 14px; }
+  .up-pick__img { display: grid; place-items: center; height: 130px; background: radial-gradient(120% 100% at 50% 0%, #fff 30%, var(--teal-tint)); border-radius: 12px; padding: 30px 16px 14px; }
+  .up-pick__img img { max-height: 80px; width: auto; object-fit: contain; }
+  .up-pick h3 { margin: 4px 0 0; font-size: 1.3rem; }
+  .up-pick h3 a { color: var(--ink); text-decoration: none; }
+  .up-pick p { margin: 0; color: var(--ink-2); font-size: 0.94rem; }
+  .up-pick dl { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 10px; margin: auto 0 0; overflow: hidden; }
+  .up-pick dl div { padding: 7px 8px; text-align: center; }
+  .up-pick dl div + div { border-left: 1px solid var(--line); }
+  .up-pick dt { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-3); }
+  .up-pick dd { margin: 0; font: 800 0.92rem var(--f-display); white-space: nowrap; }
+  .up-more, .up-others { margin: 22px 0 0; color: var(--ink-2); }
+  .up-tip { padding: 20px; }
+  .up-tip h3 { font-size: 1.05rem; }
+  .up-tip p { margin: 0; color: var(--ink-2); font-size: 0.94rem; }
+  .up-multi { margin: 22px 0 0; background: #fff; border: 1px solid var(--teal-soft); border-left: 4px solid var(--teal); border-radius: var(--r); padding: 14px 18px; }
+  .up-post { padding: 22px; text-decoration: none; color: var(--ink); display: flex; flex-direction: column; gap: 6px; transition: border-color 0.2s, box-shadow 0.2s; }
+  .up-post:hover { border-color: var(--teal); box-shadow: var(--shadow); }
+  .up-post h3 { margin: 0; font-size: 1.1rem; }
+  .up-post p { margin: 0; color: var(--ink-2); font-size: 0.92rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .up-post span { margin-top: auto; font: 700 0.92rem var(--f-display); color: var(--teal-ink); }
+</style>

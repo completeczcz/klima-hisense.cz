@@ -89,6 +89,8 @@ const tk = site.turnstileSiteKey;
     var f = document.querySelector('.lead-form'); if (!f) return;
     var q = new URLSearchParams(location.search);
     // Předvyplnění z odkazů (?rada=air-master&plocha=25&vykon=2.6)
+    if (/^(byt|dum|kancelar|jine)$/.test(q.get('objekt') || '')) f.querySelector('input[name=objekt][value=' + q.get('objekt') + ']').checked = true;
+    if (q.get('psc')) f.psc.value = q.get('psc').replace(/\D/g, '').slice(0, 5).replace(/^(\d{3})(\d{2})$/, '$1 $2');
     if (q.get('rada')) { var c = f.querySelector('#lf-r-' + q.get('rada')); if (c) c.checked = true; }
     if (q.get('plocha')) f.plocha.value = q.get('plocha').replace(/\D/g, '').slice(0, 4);
     if (q.get('vykon') && !q.get('sestava')) f.poznamka.value = 'Orientační výpočet výkonu: ' + q.get('vykon').replace('.', ',') + ' kW.';

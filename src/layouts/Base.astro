@@ -152,7 +152,7 @@ const { gtmId, ga4Id, adsId } = site.analytics;
       })();
       (function () {
         var bar = document.querySelector('.sticky-cta');
-        var forms = document.querySelectorAll('.lead-form, .cta-band');
+        var forms = document.querySelectorAll('.lead-form, .cta-band, .qf, .pf-form');
         if (!bar || !forms.length || !('IntersectionObserver' in window)) return;
         var vis = new Set();
         var io = new IntersectionObserver(function (es) {

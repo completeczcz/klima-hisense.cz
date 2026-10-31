@@ -5,6 +5,7 @@ interface Props { s: Series; headingLevel?: 'h2' | 'h3' }
 const { s, headingLevel = 'h3' } = Astro.props;
 const H = headingLevel;
 const icons = s.functions.slice(0, 5).map(featureById);
+const useSlug: Record<string, string> = { byt: 'do-bytu', dum: 'do-domu', loznice: 'do-loznice', kancelar: 'do-kancelare' };
 ---
 <article class="sc" data-uses={s.uses.join(' ')} data-reveal>
   <a class="sc__stage" href={`/klimatizace/${s.id}/`} aria-label={`Hisense ${s.name} – detail`}>
@@ -21,7 +22,7 @@ const icons = s.functions.slice(0, 5).map(featureById);
     <div class="sc__icons" aria-label="Vybrané funkce">
       {icons.map((f) => <img src={f.icon} alt={f.name} title={f.name} width="44" height="44" loading="lazy" />)}
     </div>
-    <p class="sc__uses">{s.uses.map((u) => <span class="chip">{useLabels[u]}</span>)}</p>
+    <p class="sc__uses">{s.uses.map((u) => <a class="chip" href={`/klimatizace/${useSlug[u]}/`}>{useLabels[u]}</a>)}</p>
     <div class="sc__cta">
       <a class="btn btn--sm" href={`/klimatizace/${s.id}/`}>Prohlédnout</a>
       <a class="btn btn--sm btn--ghost" href={`/poptavka/?rada=${s.id}`}>Poptat</a>
@@ -51,6 +52,8 @@ const icons = s.functions.slice(0, 5).map(featureById);
   .sc__stats dd { margin: 2px 0 0; font: 800 1rem var(--f-display); color: var(--ink); white-space: nowrap; }
   .sc__icons { display: flex; gap: 8px; flex-wrap: wrap; }
   .sc__icons img { width: 40px; height: 40px; object-fit: contain; }
+  .sc__uses .chip { text-decoration: none; }
+  .sc__uses .chip:hover { background: var(--teal); color: #fff; }
   .sc__uses { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
   .sc__cta { margin-top: auto; padding-top: 6px; display: flex; gap: 10px; flex-wrap: wrap; }
 </style>

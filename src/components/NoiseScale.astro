@@ -1,0 +1,35 @@
+---
+import { seriesStats, noiseRefs } from '../data/stats';
+const rows = [
+  ...seriesStats.map((s) => ({ db: s.noise, label: s.name, href: `/klimatizace/${s.id}/`, hisense: true })),
+  ...noiseRefs.map((r) => ({ db: r.db, label: r.label, href: '', hisense: false })),
+].sort((a, b) => a.db - b.db || Number(b.hisense) - Number(a.hisense));
+const max = 60;
+---
+<div class="ns">
+  <ul class="ns__list">
+    {rows.map((r) => (
+      <li class:list={['ns__row', { 'ns__row--h': r.hisense }]}>
+        <span class="ns__lbl">{r.href ? <a href={r.href}>{r.label}</a> : r.label}</span>
+        <span class="ns__bar"><span style={`width:${(r.db / max) * 100}%`}></span></span>
+        <span class="ns__db num">{r.db} dB</span>
+      </li>
+    ))}
+  </ul>
+  <p class="ns__note">Klimatizace Hisense: nejtišší režim vnitřní jednotky v dB(A) podle katalogu výrobce. Běžné zvuky jsou orientační. Zvýšení o 10 dB vnímáme zhruba jako dvojnásobnou hlasitost.</p>
+</div>
+
+<style>
+  .ns { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: clamp(18px, 3vw, 28px); }
+  .ns__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .ns__row { display: grid; grid-template-columns: minmax(120px, 190px) minmax(0, 1fr) 56px; gap: 12px; align-items: center; font-size: 0.94rem; color: var(--ink-2); }
+  .ns__row--h { color: var(--ink); font-weight: 700; font-family: var(--f-display); }
+  .ns__lbl a { color: inherit; text-decoration: none; }
+  .ns__lbl a:hover { color: var(--teal-ink); text-decoration: underline; }
+  .ns__bar { height: 12px; background: var(--bg-2); border-radius: 999px; overflow: hidden; }
+  .ns__bar span { display: block; height: 100%; border-radius: 999px; background: #b7c6cb; }
+  .ns__row--h .ns__bar span { background: var(--teal); }
+  .ns__db { text-align: right; }
+  .ns__note { margin: 16px 0 0; font-size: 0.84rem; color: var(--ink-2); }
+  @media (max-width: 520px) { .ns__row { grid-template-columns: 1fr 52px; gap: 4px 10px; } .ns__bar { grid-column: 1 / -1; grid-row: 2; } }
+</style>

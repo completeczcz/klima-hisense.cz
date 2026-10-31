@@ -4,6 +4,11 @@ import SeriesFilter from '../components/SeriesFilter.astro';
 import FeatureGrid from '../components/FeatureGrid.astro';
 import AppShowcase from '../components/AppShowcase.astro';
 import Sizer from '../components/Sizer.astro';
+import QuickForm from '../components/QuickForm.astro';
+import TrustBar from '../components/TrustBar.astro';
+import Guide from '../components/Guide.astro';
+import NoiseScale from '../components/NoiseScale.astro';
+import HeatingCalc from '../components/HeatingCalc.astro';
 import Steps from '../components/Steps.astro';
 import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
@@ -26,19 +31,13 @@ const posts = pick.map((id) => all.find((p) => p.id === id)).filter((p): p is No
         <span class="eyebrow">{site.claim}</span>
         <h1>Chytrá klimatizace <em>Hisense</em> pro váš domov</h1>
         <p class="lead">Chladí v létě, topí v zimě a ovládáte ji z telefonu. Vyberte si řadu, pošlete nezávaznou poptávku a montáž zajistíme po celé ČR.</p>
-        <div class="btns">
-          <a class="btn" href="/poptavka/">Nezávazná poptávka</a>
-          <a class="btn btn--ghost hero__ghost" href="/klimatizace/">Prohlédnout řady</a>
-        </div>
-        <ul class="hero__facts">
-          <li><b>A+++</b><span>energetická třída</span></li>
-          <li><b>18 dB(A)</b><span>tichý provoz od</span></li>
-          <li><b>−22 °C</b><span>topí i v mrazu</span></li>
-          <li><b>3 roky</b><span>záruka</span></li>
-        </ul>
+        <QuickForm id="qf-hero" />
+        <p class="hero__more"><a href="/klimatizace/">Prohlédnout řady klimatizací</a> · <a href="/klimatizace/multisplit/">Více místností</a></p>
       </div>
     </div>
   </section>
+
+  <TrustBar />
 
   <section class="section" id="rady">
     <div class="wrap">
@@ -48,6 +47,17 @@ const posts = pick.map((id) => all.find((p) => p.id === id)).filter((p): p is No
         <p class="lead">Pět řad, které chladí i topí. Od chytré novinky Air Master s inteligentním okem po jednoduchou Hi‑Smart.</p>
       </div>
       <SeriesFilter />
+    </div>
+  </section>
+
+  <section class="section section--alt" id="pruvodce">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Průvodce výběrem</span>
+        <h2>Nevíte, kterou vybrat?</h2>
+        <p class="lead">Odpovězte na tři otázky a doporučíme vám řadu, která se k vám hodí nejvíc.</p>
+      </div>
+      <Guide />
     </div>
   </section>
 
@@ -64,6 +74,36 @@ const posts = pick.map((id) => all.find((p) => p.id === id)).filter((p): p is No
   </section>
 
   <AppShowcase />
+
+  <section class="section" id="ticho">
+    <div class="wrap split split--top">
+      <div>
+        <span class="eyebrow">Hlučnost</span>
+        <h2>Tišší než šumění listí</h2>
+        <p class="lead">Nejtišší klimatizace Hisense běží v nočním režimu od 18 dB(A). To je méně než šepot, takže vás nebudí ani v ložnici.</p>
+        <p class="muted">Do ložnice vybírejte řadu s nejnižší hlučností vnitřní jednotky a nechte ji v noci běžet v tichém režimu QUIET nebo SLEEP. Venkovní jednotku technik umístí tak, aby nerušila vás ani sousedy.</p>
+        <p><a href="/klimatizace/do-loznice/">Klimatizace do ložnice →</a></p>
+      </div>
+      <NoiseScale />
+    </div>
+  </section>
+
+  <section class="section section--tint" id="topeni">
+    <div class="wrap split split--top">
+      <div>
+        <span class="eyebrow">Topení klimatizací</span>
+        <h2>V zimě topí, a to úsporně</h2>
+        <p class="lead">Klimatizace Hisense je tepelné čerpadlo vzduch–vzduch. Teplo bere z venkovního vzduchu, takže z jedné kilowatthodiny elektřiny dodá několikanásobně víc tepla.</p>
+        <ul class="ticks">
+          <li>Topí až do venkovní teploty −22 °C</li>
+          <li>Rychle vytopí místnost na jaře i na podzim, bez zapínání kotle</li>
+          <li>Na chatě udrží +8 °C, aby nic nezamrzlo</li>
+        </ul>
+        <p><a class="btn btn--ghost" href="/vytapeni-klimatizaci/">Vytápění klimatizací</a></p>
+      </div>
+      <HeatingCalc />
+    </div>
+  </section>
 
   <section class="section" id="vykon">
     <div class="wrap">
@@ -143,6 +183,9 @@ const posts = pick.map((id) => all.find((p) => p.id === id)).filter((p): p is No
   .hero h1 em { font-style: normal; color: var(--teal); }
   .hero .lead { margin-bottom: 1.6em; }
   .hero__ghost { background: rgba(255, 255, 255, 0.75); }
+  .hero__more { margin: 14px 0 0; font-size: 0.95rem; }
+  .hero__more a { font-weight: 600; }
+  .split--top { align-items: start; }
   .hero__facts { list-style: none; padding: 0; margin: 34px 0 0; display: grid; grid-template-columns: repeat(4, auto); gap: 8px 28px; justify-content: start; }
   .hero__facts li { display: grid; }
   .hero__facts b { font: 800 1.35rem var(--f-display); color: var(--ink); }

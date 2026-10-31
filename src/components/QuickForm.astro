@@ -1,0 +1,60 @@
+---
+import { site } from '../data/site';
+interface Props { id?: string; heading?: string }
+const { id = 'qf', heading = 'Nezávazná poptávka za 2 minuty' } = Astro.props;
+---
+<form class="qf" action="/poptavka/" method="get" data-qf>
+  <p class="qf__h">{heading}</p>
+  <fieldset class="qf__fs">
+    <legend class="qf__l">Kam klimatizaci chcete?</legend>
+    <div class="qf__seg">
+      <input type="radio" name="objekt" id={`${id}-o1`} value="byt" checked /><label for={`${id}-o1`}>Byt</label>
+      <input type="radio" name="objekt" id={`${id}-o2`} value="dum" /><label for={`${id}-o2`}>Dům</label>
+      <input type="radio" name="objekt" id={`${id}-o3`} value="kancelar" /><label for={`${id}-o3`}>Kancelář</label>
+    </div>
+  </fieldset>
+  <div class="qf__row">
+    <div class="qf__f">
+      <label class="qf__l" for={`${id}-m`}>Počet místností</label>
+      <select id={`${id}-m`} name="mistnosti"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option value="6">6 a více</option></select>
+    </div>
+    <div class="qf__f">
+      <label class="qf__l" for={`${id}-p`}>PSČ montáže</label>
+      <input id={`${id}-p`} name="psc" inputmode="numeric" autocomplete="postal-code" placeholder="např. 140 00" maxlength="6" />
+    </div>
+  </div>
+  <button class="btn btn--block" type="submit">Pokračovat k poptávce →</button>
+  <p class="qf__note">Zdarma a nezávazně · odpověď {site.responseTime}</p>
+</form>
+
+<script is:inline>
+  document.querySelectorAll('[data-qf]').forEach(function (f) {
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var q = new URLSearchParams();
+      q.set('objekt', f.querySelector('input[name=objekt]:checked').value);
+      q.set('mistnosti', f.mistnosti.value);
+      if (+f.mistnosti.value > 1) q.set('reseni', 'poradit');
+      var psc = f.psc.value.replace(/\D/g, '').slice(0, 5);
+      if (psc) q.set('psc', psc);
+      location.href = '/poptavka/?' + q.toString() + '#formular';
+    });
+  });
+</script>
+
+<style>
+  .qf { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); box-shadow: var(--shadow); padding: 20px; display: grid; gap: 14px; max-width: 470px; }
+  .qf__h { margin: 0; font: 800 1.15rem var(--f-display); }
+  .qf__fs { border: 0; margin: 0; padding: 0; }
+  .qf__l { display: block; font: 700 0.84rem var(--f-display); color: var(--ink-2); margin-bottom: 6px; padding: 0; }
+  .qf__seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .qf__seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .qf__seg label { display: flex; align-items: center; justify-content: center; min-height: 44px; border: 1px solid #c9d7da; border-radius: 10px; font: 600 0.95rem var(--f-display); cursor: pointer; transition: all 0.15s; }
+  .qf__seg input:checked + label { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .qf__seg input:focus-visible + label { outline: 3px solid var(--teal); outline-offset: 2px; }
+  .qf__row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .qf__f { min-width: 0; }
+  .qf select, .qf input:not([type=radio]) { width: 100%; min-height: 46px; border: 1px solid #c9d7da; border-radius: 10px; padding: 0 12px; font: inherit; font-size: 1rem; background: #fff; color: var(--ink); }
+  .qf select:focus, .qf input:focus { border-color: var(--teal); outline: 3px solid rgba(0, 166, 162, 0.2); }
+  .qf__note { margin: 0; text-align: center; font-size: 0.84rem; color: var(--ink-2); }
+</style>

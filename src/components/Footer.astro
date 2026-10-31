@@ -1,6 +1,8 @@
 ---
 import { site } from '../data/site';
 import { series } from '../data/products';
+import { uses } from '../data/uses';
+import { regions } from '../data/regions';
 const c = site.company;
 ---
 <footer class="ftr">
@@ -11,17 +13,27 @@ const c = site.company;
       <p class="ftr__contact"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br /><span>{site.hours}</span></p>
     </div>
     <div>
-      <p class="ftr__h">Klimatizace</p>
+      <p class="ftr__h">Řady Hisense</p>
       <ul>
         {series.map((s) => <li><a href={`/klimatizace/${s.id}/`}>Hisense {s.name}</a></li>)}
-        <li><a href="/klimatizace/multisplit/">Multisplit pro více místností</a></li>
         <li><a href="/klimatizace/">Přehled řad</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="ftr__h">Podle použití</p>
+      <ul>
+        {uses.map((u) => <li><a href={`/klimatizace/${u.slug}/`}>Klimatizace {u.label.toLowerCase()}</a></li>)}
+        <li><a href="/klimatizace/multisplit/">Multisplit pro více místností</a></li>
+        <li><a href="/vytapeni-klimatizaci/">Vytápění klimatizací</a></li>
       </ul>
     </div>
     <div>
       <p class="ftr__h">Informace</p>
       <ul>
         <li><a href="/chytre-funkce/">Chytré funkce</a></li>
+        <li><a href="/slovnik-pojmu/">Slovník pojmů</a></li>
+        <li><a href="/montaz-klimatizace/">Montáž v krajích</a></li>
+        <li><a href="/pro-montazni-firmy/">Pro montážní firmy</a></li>
         <li><a href="/jak-to-probiha/">Jak probíhá montáž</a></li>
         <li><a href="/blog/">Poradna</a></li>
         <li><a href="/caste-dotazy/">Časté dotazy</a></li>
@@ -40,6 +52,10 @@ const c = site.company;
       </ul>
     </div>
   </div>
+  <div class="wrap ftr__regions">
+    <p class="ftr__h">Montáž klimatizací Hisense v krajích</p>
+    <p>{regions.map((r, i) => <>{i > 0 && <span aria-hidden="true"> · </span>}<a href={`/montaz-klimatizace/${r.id}/`}>{r.name}</a></>)}</p>
+  </div>
   <div class="wrap ftr__legal">
     <p>© {new Date().getFullYear()} {c.name}. Technické údaje vycházejí z podkladů výrobce, změna vyhrazena. Hisense je ochranná známka Hisense Group.</p>
   </div>
@@ -47,7 +63,9 @@ const c = site.company;
 
 <style>
   .ftr { background: var(--night); color: #b9cbd2; padding-block: 56px 28px; font-size: 0.93rem; }
-  .ftr__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.1fr; gap: 36px; }
+  .ftr__grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr 1.2fr; gap: 32px; }
+  .ftr__regions { margin-top: 36px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
+  .ftr__regions p:last-child { margin: 0; line-height: 1.9; }
   .ftr img { height: 24px; width: auto; margin-bottom: 14px; }
   .ftr__h { font: 700 0.76rem var(--f-display); letter-spacing: 0.14em; text-transform: uppercase; color: #fff; margin-bottom: 12px; }
   .ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
@@ -57,6 +75,7 @@ const c = site.company;
   .ftr__reg { font-size: 0.8rem; opacity: 0.75; }
   .ftr__legal { border-top: 1px solid rgba(255, 255, 255, 0.12); margin-top: 36px; padding-top: 20px; font-size: 0.8rem; opacity: 0.75; }
   .ftr__legal p { margin: 0; }
+  @media (max-width: 1100px) { .ftr__grid { grid-template-columns: 1fr 1fr 1fr; } .ftr__brand { grid-column: 1 / -1; } }
   @media (max-width: 900px) { .ftr__grid { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 520px) { .ftr__grid { grid-template-columns: 1fr; gap: 26px; } }
 </style>

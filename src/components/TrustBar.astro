@@ -1,0 +1,20 @@
+---
+import { trust } from '../data/stats';
+---
+<section class="tb" aria-label="Hisense v číslech">
+  <div class="wrap">
+    <ul class="tb__list">
+      {trust.map((t) => <li><b>{t.big}</b><span>{t.label}</span></li>)}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .tb { background: var(--night); color: #cfe0e5; }
+  .tb__list { list-style: none; margin: 0; padding: 22px 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; }
+  .tb li { display: grid; gap: 2px; align-content: start; border-left: 2px solid var(--teal); padding-left: 14px; }
+  .tb b { font: 800 1.5rem/1.15 var(--f-display); color: #fff; }
+  .tb span { font-size: 0.86rem; line-height: 1.35; }
+  @media (max-width: 1024px) { .tb__list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .tb__list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tb li:last-child { grid-column: 1 / -1; } }
+</style>

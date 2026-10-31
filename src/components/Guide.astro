@@ -1,0 +1,115 @@
+---
+import { series, mainImage } from '../data/products';
+// Průvodce výběrem: body podle priorit (0–3) a důvody z katalogových údajů
+const prio = [
+  ['ticho', 'Ticho'], ['chytre', 'Chytré funkce'], ['vzduch', 'Čistý vzduch'], ['design', 'Design'], ['topeni', 'Topení v zimě'], ['jednoduchost', 'Jednoduchost'],
+];
+const score: Record<string, Record<string, number>> = {
+  'air-master': { ticho: 3, chytre: 3, vzduch: 3, design: 3, topeni: 3, jednoduchost: 0 },
+  'energy-pro-x': { ticho: 3, chytre: 3, vzduch: 2, design: 3, topeni: 3, jednoduchost: 0 },
+  'uni-pure': { ticho: 3, chytre: 1, vzduch: 3, design: 1, topeni: 2, jednoduchost: 1 },
+  'wings-comfort': { ticho: 1, chytre: 1, vzduch: 2, design: 1, topeni: 1, jednoduchost: 2 },
+  'hi-smart': { ticho: 1, chytre: 0, vzduch: 1, design: 0, topeni: 0, jednoduchost: 3 },
+};
+const useBonus: Record<string, Record<string, number>> = {
+  byt: {},
+  dum: { 'air-master': 1, 'energy-pro-x': 1, 'uni-pure': 1 },
+  loznice: { 'air-master': 1, 'energy-pro-x': 1, 'uni-pure': 1 },
+  kancelar: { 'air-master': 1, 'wings-comfort': 1 },
+};
+const why: Record<string, Record<string, string>> = {
+  'air-master': { ticho: 'Od 18 dB(A) a vzduch vede podél stropu, takže nefouká na vás.', chytre: 'Smart Eye PRO pozná, kde v místnosti jste, a AI Smart sám vybere nejlepší režim.', vzduch: 'Ionizace Hi‑NANO, filtr 4 v 1 a filtr s aktivním uhlím.', design: 'Oceněná za design Red Dot 2025, v bílé i černé.', topeni: 'SCOP až 5,1 a topí do venkovní teploty −22 °C.', jednoduchost: 'Nejvíc toho udělá sama, stačí nastavit teplotu.' },
+  'energy-pro-x': { ticho: 'Od 18 dB(A), vhodná i do ložnice.', chytre: 'Smart Eye, AI Smart a hlasové ovládání.', vzduch: 'Ionizace Hi‑NANO a filtr 4 v 1.', design: 'Prémiový design v černé nebo stříbrně bílé.', topeni: 'A+++ v chlazení i topení, topí do −22 °C.', jednoduchost: 'Ovládání přes aplikaci i hlasem.' },
+  'uni-pure': { ticho: 'V režimu QUIET od 19 dB(A).', chytre: 'Wi‑Fi a aplikace ConnectLife v základu.', vzduch: 'Ionizace Hi‑NANO a filtr s aktivním uhlím.', design: 'Čistý, nadčasový bílý design.', topeni: 'Topí do −22 °C, vyhřívaná vana venkovní jednotky.', jednoduchost: 'Spolehlivý každodenní standard.' },
+  'wings-comfort': { ticho: 'Od 24 dB(A).', chytre: 'Wi‑Fi a aplikace ConnectLife v základu.', vzduch: 'Filtr 4 v 1 a plazmový ionizátor.', design: 'Klasický bílý design.', topeni: 'Topí do −20 °C.', jednoduchost: 'Ověřená řada, jako jediná i ve výkonu 6,3 kW.' },
+  'hi-smart': { ticho: 'Od 24 dB(A) a spánkový režim SLEEP.', chytre: 'Wi‑Fi modul je volitelný.', vzduch: 'Filtr s aktivním uhlím.', design: 'Jednoduchý bílý design.', topeni: 'Topí do −15 °C a umí temperovat na +8 °C.', jednoduchost: 'Praktické funkce bez zbytečností, ideální na chatu nebo do pracovny.' },
+};
+const data = {
+  series: series.map((s) => ({ id: s.id, name: s.name, tagline: s.tagline, img: mainImage(s) })),
+  score, useBonus, why, multi: ['air-master', 'energy-pro-x', 'uni-pure', 'wings-comfort'],
+};
+---
+<div class="gd" data-gd={JSON.stringify(data)}>
+  <div class="gd__q">
+    <fieldset>
+      <legend><span>1</span>Kam klimatizaci chcete?</legend>
+      <div class="gd__opts">
+        <input type="radio" name="gd-use" id="gd-u1" value="byt" checked /><label for="gd-u1">Byt</label>
+        <input type="radio" name="gd-use" id="gd-u2" value="dum" /><label for="gd-u2">Rodinný dům</label>
+        <input type="radio" name="gd-use" id="gd-u3" value="loznice" /><label for="gd-u3">Ložnice</label>
+        <input type="radio" name="gd-use" id="gd-u4" value="kancelar" /><label for="gd-u4">Kancelář</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend><span>2</span>Co je pro vás nejdůležitější? <small>(i víc možností)</small></legend>
+      <div class="gd__opts">
+        {prio.map(([k, l], i) => <><input type="checkbox" name="gd-p" id={`gd-p${i}`} value={k} checked={k === 'ticho'} /><label for={`gd-p${i}`}>{l}</label></>)}
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend><span>3</span>Kolik místností?</legend>
+      <div class="gd__opts">
+        <input type="radio" name="gd-r" id="gd-r1" value="1" checked /><label for="gd-r1">Jedna</label>
+        <input type="radio" name="gd-r" id="gd-r2" value="2" /><label for="gd-r2">Dvě až pět</label>
+      </div>
+    </fieldset>
+  </div>
+  <div class="gd__res" aria-live="polite"></div>
+</div>
+
+<script is:inline>
+  (function () {
+    document.querySelectorAll('[data-gd]').forEach(function (root) {
+      var D = JSON.parse(root.getAttribute('data-gd'));
+      var res = root.querySelector('.gd__res');
+      var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+      function run() {
+        var use = root.querySelector('input[name=gd-use]:checked').value;
+        var pr = Array.prototype.map.call(root.querySelectorAll('input[name=gd-p]:checked'), function (i) { return i.value; });
+        var multi = root.querySelector('input[name=gd-r]:checked').value !== '1';
+        if (!pr.length) pr = ['ticho', 'topeni'];
+        var list = D.series.filter(function (s) { return !multi || D.multi.indexOf(s.id) > -1; }).map(function (s, idx) {
+          var sc = pr.reduce(function (t, p) { return t + D.score[s.id][p]; }, 0) + (D.useBonus[use][s.id] || 0);
+          return { s: s, sc: sc, idx: idx };
+        }).sort(function (a, b) { return b.sc - a.sc || a.idx - b.idx; });
+        var top = list[0].s, alt = list[1].s;
+        var reasons = pr.map(function (p) { return '<li>' + esc(D.why[top.id][p]) + '</li>'; }).join('');
+        var q = '/poptavka/?rada=' + top.id + '&objekt=' + (use === 'loznice' ? 'byt' : use) + (multi ? '&mistnosti=2&reseni=multisplit' : '');
+        res.innerHTML = '<span class="eyebrow">Doporučujeme</span>' +
+          '<div class="gd__top"><img src="' + top.img + '" alt="" width="240" height="100" loading="lazy" /><div><h3>Hisense ' + esc(top.name) + '</h3><p>' + esc(top.tagline) + '</p></div></div>' +
+          '<ul class="gd__why">' + reasons + '</ul>' +
+          (multi ? '<p class="gd__multi">Pro více místností ji zapojíme do <a href="/klimatizace/multisplit/">multisplitu</a> s jednou venkovní jednotkou.</p>' : '') +
+          '<div class="btns"><a class="btn btn--white" href="' + q + '">Poptat ' + esc(top.name) + '</a><a class="btn btn--line" href="/klimatizace/' + top.id + '/">Detail řady</a></div>' +
+          '<p class="gd__alt">Zvažte také <a href="/klimatizace/' + alt.id + '/">' + esc(alt.name) + '</a>.</p>';
+      }
+      root.addEventListener('change', run); run();
+    });
+  })();
+</script>
+
+<style>
+  .gd { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .gd__q { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: clamp(18px, 3vw, 28px); display: grid; gap: 20px; }
+  .gd fieldset { border: 0; margin: 0; padding: 0; }
+  .gd legend { font: 700 1rem var(--f-display); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-bottom: 10px; padding: 0; }
+  .gd legend span { width: 26px; height: 26px; border-radius: 50%; background: var(--teal); color: #fff; display: grid; place-items: center; font-size: 0.82rem; flex: none; }
+  .gd legend small { font-weight: 400; color: var(--ink-3); font-size: 0.85rem; }
+  .gd__opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .gd__opts input { position: absolute; opacity: 0; pointer-events: none; }
+  .gd__opts label { display: inline-flex; align-items: center; min-height: 42px; border: 1px solid #c9d7da; border-radius: 999px; padding: 0.45em 1.05em; font-size: 0.94rem; cursor: pointer; transition: all 0.15s; }
+  .gd__opts input:checked + label { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .gd__opts input[type=checkbox]:checked + label::before { content: '✓'; margin-right: 6px; font-weight: 700; }
+  .gd__opts input:focus-visible + label { outline: 3px solid var(--teal); outline-offset: 2px; }
+  .gd__res { position: sticky; top: 90px; background: linear-gradient(160deg, var(--teal), var(--teal-dark)); color: #fff; border-radius: var(--r-l); padding: clamp(20px, 3vw, 30px); display: flex; flex-direction: column; gap: 12px; }
+  .gd__res :global(.eyebrow) { color: #c8f3f1; margin: 0; }
+  .gd__res :global(.gd__top) { display: flex; gap: 14px; align-items: center; }
+  .gd__res :global(.gd__top img) { width: 120px; height: auto; background: #fff; border-radius: 12px; padding: 8px; flex: none; }
+  .gd__res :global(h3) { color: #fff; font-size: 1.5rem; margin: 0; }
+  .gd__res :global(.gd__top p) { margin: 0; opacity: 0.85; }
+  .gd__res :global(.gd__why) { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+  .gd__res :global(.gd__multi), .gd__res :global(.gd__alt) { margin: 0; font-size: 0.92rem; }
+  .gd__res :global(a:not(.btn)) { color: #fff; font-weight: 700; }
+  .gd__res :global(.btn--line) { background: transparent; border-color: rgba(255, 255, 255, 0.7); color: #fff; }
+  .gd__res :global(.btn--line:hover) { background: rgba(255, 255, 255, 0.12); }
+  @media (max-width: 860px) { .gd { grid-template-columns: 1fr; } .gd__res { position: static; } }
+</style>
