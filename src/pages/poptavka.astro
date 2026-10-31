@@ -21,7 +21,6 @@ import { site } from '../data/site';
           <li>Záruka {site.warrantyYears} roky na jednotky Hisense</li>
         </ul>
         <div class="pq__contact">
-          <p class="pq__who">{site.contactPerson.name}<span>{site.contactPerson.role}, {site.company.name}</span></p>
           <p><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
           <p class="small muted">{site.hours}</p>
         </div>
@@ -34,8 +33,6 @@ import { site } from '../data/site';
   .pq { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(28px, 5vw, 56px); align-items: start; }
   .pq h1 { font-size: var(--step-3); }
   .pq__contact { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 10px; }
-  .pq__who { font: 800 1.1rem var(--f-display); margin-bottom: 6px; }
-  .pq__who span { display: block; font: 400 0.88rem var(--f-body); color: var(--ink-2); }
   .pq__contact a { font: 700 1.1rem var(--f-display); text-decoration: none; }
   @media (max-width: 900px) { .pq { grid-template-columns: 1fr; } }
 </style>

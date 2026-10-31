@@ -11,7 +11,6 @@ export const site = {
   hours: 'Po–Pá 8:00–16:00',
   responseTime: 'do 1 pracovního dne',
   warrantyYears: 3,
-  contactPerson: { name: 'Sebastian Petrovka', role: 'Projektový manažer' },
   company: {
     name: 'COMPLETE CZ, spol. s r.o.',
     ico: '26707829',
