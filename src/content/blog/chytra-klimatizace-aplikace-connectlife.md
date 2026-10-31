@@ -41,7 +41,7 @@ Výhody chytrého ovládání nejlépe ukáží konkrétní situace.
 
 **Zapomenutá klimatizace.** Už sedíte ve vlaku na dovolenou a nevíte, jestli jste klimatizaci vypnuli. Stačí otevřít aplikaci a máte jistotu.
 
-**Chata a chalupa.** Přes zimu udržujete na chatě temperování na +8 °C, aby objekt nevymrzl. Tuto funkci mají řady Air Master a Hi-Smart. Den před odjezdem přepnete na topení a přijedete do vyhřátého. Víc o vytápění najdete v článku [Topení klimatizací](/blog/topeni-klimatizaci/).
+**Chata a chalupa.** Přes zimu udržujete na chatě temperování na +8 °C, aby objekt nevymrzl. Tuto funkci mají všechny nástěnné řady Hisense. Den před odjezdem přepnete na topení a přijedete do vyhřátého. Víc o vytápění najdete v článku [Topení klimatizací](/blog/topeni-klimatizaci/).
 
 **Večer na gauči.** Nechce se vám hledat ovladač? Řeknete hlasovému asistentovi, ať klimatizaci ztlumí nebo přidá stupeň.
 

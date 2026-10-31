@@ -1,0 +1,123 @@
+---
+import Base from '../../layouts/Base.astro';
+import QuickForm from '../../components/QuickForm.astro';
+import Steps from '../../components/Steps.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { regions, type Region } from '../../data/regions';
+import { series } from '../../data/products';
+import { seriesStats } from '../../data/stats';
+import { site } from '../../data/site';
+export function getStaticPaths() {
+  return regions.map((r) => ({ params: { kraj: r.id }, props: { r } }));
+}
+const { r } = Astro.props as { r: Region };
+const others = regions.filter((x) => x.id !== r.id);
+let description = `Montáž klimatizace Hisense ${r.inName}: ${r.cities.slice(0, 3).join(', ')} a okolí. Oficiální zastoupení Hisense, prověřené montážní firmy, poptávka zdarma.`;
+if (description.length > 160) description = `Montáž klimatizace Hisense ${r.inName}. Oficiální zastoupení Hisense, prověřené montážní firmy z regionu, poptávka zdarma a nezávazně.`;
+const faq = [
+  ...r.faq,
+  { q: `Kdo klimatizaci ${r.inName} namontuje?`, a: `Poptávku předáme prověřené partnerské montážní firmě z regionu. Ta s vámi domluví obhlídku, připraví nabídku a klimatizaci namontuje a uvede do provozu. Zařízení dodáváme jako oficiální zastoupení Hisense pro ČR se zárukou ${site.warrantyYears} roky.` },
+];
+const minus = (n: number) => String(n).replace('-', '−');
+const service = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: 'Montáž klimatizace',
+  name: `Montáž klimatizace Hisense ${r.inName}`,
+  provider: { '@id': `${site.url}/#firma` },
+  areaServed: { '@type': 'AdministrativeArea', name: r.name },
+  brand: { '@type': 'Brand', name: 'Hisense' },
+};
+---
+<Base title={`Montáž klimatizace Hisense ${r.inName}`} {description} crumbs={[{ name: 'Montáž v krajích', href: '/montaz-klimatizace/' }, { name: r.name, href: `/montaz-klimatizace/${r.id}/` }]} schema={[service]}>
+  <section class="section rg-hero">
+    <div class="wrap split split--top">
+      <div>
+        <span class="eyebrow">Montáž klimatizace · {r.name}</span>
+        <h1>Montáž klimatizace Hisense {r.inName}</h1>
+        <p class="lead">{r.intro}</p>
+        <p class="rg-cities-h">Montujeme mimo jiné v těchto místech:</p>
+        <ul class="rg-cities">{r.cities.map((c) => <li>{c}</li>)}</ul>
+      </div>
+      <QuickForm id="qf-region" heading={`Poptávka klimatizace ${r.inName}`} />
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap grid grid--2">
+      <div class="card rg-c" data-reveal>
+        <h2>Byty a domy {r.inName}</h2>
+        <p>{r.housing}</p>
+      </div>
+      <div class="card rg-c" data-reveal>
+        <h2>Léto, zima a klimatizace</h2>
+        <p>{r.climate}</p>
+      </div>
+    </div>
+    <div class="wrap"><p class="rg-tip"><b>Tip:</b> {r.tip}</p></div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Klimatizace Hisense</span>
+        <h2>Které řady u nás nejčastěji montujeme</h2>
+      </div>
+      <div class="rg-series">
+        {series.map((s) => {
+          const st = seriesStats.find((x) => x.id === s.id)!;
+          return (
+            <a class="card rg-s" href={`/klimatizace/${s.id}/`}>
+              <b>{s.name}</b>
+              <span>{s.tagline}</span>
+              <small class="num">od {st.noise} dB(A) · topí do {minus(st.heatMin)} °C</small>
+            </a>
+          );
+        })}
+        <a class="card rg-s rg-s--multi" href="/klimatizace/multisplit/"><b>Multisplit</b><span>2–5 místností, jedna venkovní jednotka</span><small>topí do −20 °C</small></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="wrap">
+      <div class="head"><span class="eyebrow">Jak to probíhá</span><h2>Od poptávky po hotovou montáž</h2></div>
+      <Steps />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap"><Faq items={faq} /></div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap">
+      <p class="rg-others"><b>Montáž v dalších krajích:</b> {others.map((o, i) => <>{i > 0 && ' · '}<a href={`/montaz-klimatizace/${o.id}/`}>{o.name}</a></>)}</p>
+    </div>
+  </section>
+
+  <CtaBand heading={`Chcete klimatizaci ${r.inName}?`} />
+</Base>
+
+<style>
+  .rg-hero { padding-top: 28px; }
+  .split--top { align-items: start; }
+  .rg-cities-h { margin: 18px 0 8px; font: 700 0.92rem var(--f-display); }
+  .rg-cities { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .rg-cities li { background: var(--teal-tint); border: 1px solid var(--teal-soft); border-radius: 999px; padding: 4px 12px; font-size: 0.88rem; }
+  .rg-c { padding: clamp(20px, 3vw, 30px); }
+  .rg-c h2 { font-size: var(--step-2); }
+  .rg-c p { margin: 0; color: var(--ink-2); }
+  .rg-tip { margin: 22px 0 0; background: #fff; border: 1px solid var(--teal-soft); border-left: 4px solid var(--teal); border-radius: var(--r); padding: 14px 18px; }
+  .rg-series { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .rg-s { padding: 18px; text-decoration: none; color: var(--ink); display: grid; gap: 2px; transition: border-color 0.2s, box-shadow 0.2s; }
+  .rg-s:hover { border-color: var(--teal); box-shadow: var(--shadow); }
+  .rg-s b { font: 800 1.15rem var(--f-display); }
+  .rg-s span { color: var(--ink-2); font-size: 0.92rem; }
+  .rg-s small { color: var(--teal-ink); font-weight: 600; margin-top: 4px; }
+  .rg-s--multi { background: var(--teal-soft); border-color: var(--teal); }
+  .rg-others { margin: 0; line-height: 1.9; }
+  @media (max-width: 900px) { .rg-series { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .rg-series { grid-template-columns: 1fr; } }
+</style>

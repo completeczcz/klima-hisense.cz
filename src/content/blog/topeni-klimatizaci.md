@@ -12,7 +12,7 @@ faq:
   - q: "Je topení klimatizací úsporné?"
     a: "Klimatizace pracuje jako tepelné čerpadlo, takže z jedné kilowatthodiny elektřiny vyrobí několikanásobně víc tepla. Například SCOP 5,1 znamená, že za topnou sezonu dodá v průměru asi 5,1 kWh tepla na každou spotřebovanou kWh elektřiny."
   - q: "Co je režim +8 °C?"
-    a: "Je to temperování: klimatizace drží v místnosti stálých +8 °C, aby objekt nevymrzl. Hodí se pro chatu nebo byt, kam jezdíte jen občas. Mají ho řady Air Master a Hi-Smart."
+    a: "Je to temperování: klimatizace drží v místnosti stálých +8 °C, aby objekt nevymrzl. Hodí se pro chatu nebo byt, kam jezdíte jen občas. Umějí ho všechny nástěnné řady Hisense."
   - q: "Může klimatizace vytopit celý dům?"
     a: "Klimatizace vytápí místnost, ve které je vnitřní jednotka. Pro dvě až pět místností se hodí multisplit, tedy jedna venkovní jednotka pro několik vnitřních. Topí až do venkovní teploty −20 °C."
 related: ["energeticke-tridy-seer-scop", "klimatizace-do-rodinneho-domu", "chytra-klimatizace-aplikace-connectlife"]
@@ -50,7 +50,7 @@ S klesající venkovní teplotou přirozeně klesá výkon i účinnost každéh
 
 ## Režim +8 °C pro chatu i prázdný byt
 
-Řady **Air Master** a **Hi-Smart** umějí udržovat v místnosti stálou teplotu **+8 °C**. Hodí se to všude, kam nejezdíte každý den: na chatu, chalupu nebo do bytu, který je přes zimu prázdný. Objekt nevymrzne a přitom netopíte na plný komfort.
+Všechny nástěnné řady Hisense od **Hi-Smart** po **Air Master** umějí udržovat v místnosti stálou teplotu **+8 °C**. Hodí se to všude, kam nejezdíte každý den: na chatu, chalupu nebo do bytu, který je přes zimu prázdný. Objekt nevymrzne a přitom netopíte na plný komfort.
 
 Ještě praktičtější je to s připojením k Wi-Fi. Den před příjezdem přepnete klimatizaci v aplikaci ConnectLife na běžné topení a přijedete do vyhřátého. U řady Hi-Smart je k tomu potřeba volitelný Wi-Fi modul. Co všechno aplikace umí, popisujeme v článku [Chytrá klimatizace s aplikací ConnectLife](/blog/chytra-klimatizace-aplikace-connectlife/).
 

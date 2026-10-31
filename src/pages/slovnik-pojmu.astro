@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { glossary } from '../data/glossary';
+import { site } from '../data/site';
+const letter = (t: string) => (t.trim().toLocaleUpperCase('cs').startsWith('CH') ? 'Ch' : t.trim()[0].toLocaleUpperCase('cs'));
+const groups: { l: string; items: typeof glossary }[] = [];
+for (const g of glossary) {
+  const l = letter(g.term);
+  const last = groups[groups.length - 1];
+  if (last && last.l === l) last.items.push(g); else groups.push({ l, items: [g] });
+}
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTermSet',
+  name: 'Slovník pojmů – klimatizace',
+  url: new URL('/slovnik-pojmu/', site.url).href,
+  hasDefinedTerm: glossary.map((g) => ({ '@type': 'DefinedTerm', name: g.term, description: g.text, url: new URL(`/slovnik-pojmu/#${g.id}`, site.url).href })),
+};
+---
+<Base
+  title="Slovník pojmů: klimatizace srozumitelně"
+  description="Slovník pojmů ze světa klimatizací: SEER, SCOP, invertor, multisplit, R32, kondenzát, Smart Eye a další. Krátká a srozumitelná vysvětlení."
+  crumbs={[{ name: 'Slovník pojmů', href: '/slovnik-pojmu/' }]}
+  schema={[schema]}
+>
+  <section class="section" style="padding-top:28px">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Poradna</span>
+        <h1>Slovník pojmů</h1>
+        <p class="lead">Co znamená SEER, k čemu je invertor nebo jak funguje multisplit? Krátká vysvětlení pojmů, na které narazíte při výběru klimatizace.</p>
+      </div>
+      <nav class="gl-az" aria-label="Písmena">{groups.map((g) => <a href={`#pismeno-${encodeURIComponent(g.l)}`}>{g.l}</a>)}</nav>
+      <div class="gl">
+        {groups.map((g) => (
+          <section class="gl-g" id={`pismeno-${encodeURIComponent(g.l)}`}>
+            <h2>{g.l}</h2>
+            <dl>
+              {g.items.map((t) => (
+                <div class="gl-t" id={t.id}>
+                  <dt>{t.term}</dt>
+                  <dd>{t.text}{t.link && <> <a href={t.link.href}>{t.link.label} →</a></>}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
+  <CtaBand heading="Nechcete to řešit sami?" text={`Napište nám, co potřebujete. Ozveme se ${site.responseTime} a doporučíme vhodnou klimatizaci bez odborných termínů.`} />
+</Base>
+
+<style>
+  .gl-az { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 28px; position: sticky; top: 70px; z-index: 5; background: rgba(255, 255, 255, 0.96); padding: 10px 0; }
+  .gl-az a { display: grid; place-items: center; min-width: 38px; height: 38px; padding: 0 8px; border: 1px solid var(--line); border-radius: 10px; text-decoration: none; font: 700 0.95rem var(--f-display); color: var(--teal-ink); }
+  .gl-az a:hover { background: var(--teal-soft); }
+  .gl { display: grid; gap: 28px; max-width: 860px; }
+  .gl-g { scroll-margin-top: 140px; }
+  .gl-g h2 { font-size: var(--step-2); color: var(--teal); border-bottom: 2px solid var(--teal-soft); padding-bottom: 4px; }
+  .gl-g dl { margin: 0; display: grid; gap: 16px; }
+  .gl-t { scroll-margin-top: 140px; }
+  .gl-t:target { background: var(--teal-tint); border-radius: 10px; box-shadow: 0 0 0 8px var(--teal-tint); }
+  .gl-t dt { font: 800 1.1rem var(--f-display); }
+  .gl-t dd { margin: 4px 0 0; color: var(--ink-2); }
+  .gl-t dd a { font-weight: 600; white-space: nowrap; }
+</style>

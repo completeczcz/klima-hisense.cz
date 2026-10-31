@@ -21,6 +21,9 @@ const byPost: Record<string, string> = {
   'udrzba-a-cisteni-klimatizace': '/img/wings-comfort.webp',
   'klimatizace-do-rodinneho-domu': '/img/interier-zima.jpg',
   'multisplit-nebo-samostatne-klimatizace': '/img/interier-lampa.jpg',
+  'klimatizace-v-bytovem-dome-svj': '/img/interier-lampa.jpg',
+  'dotace-na-klimatizaci': '/img/interier-zima.jpg',
+  'air-master-nebo-energy-pro-x': '/img/air-master-bila.webp',
 };
 export const postImage = (slug: string) => byPost[slug] ?? '/img/hero-loznice.jpg';
 export const isPhoto = (src: string) => src.endsWith('.jpg');

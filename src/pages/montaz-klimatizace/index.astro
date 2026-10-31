@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Steps from '../../components/Steps.astro';
+import { regions } from '../../data/regions';
+---
+<Base
+  title="Montáž klimatizace Hisense po celé ČR"
+  description="Montáž klimatizací Hisense ve všech krajích České republiky. Poptávku předáme prověřené montážní firmě z vašeho regionu. Poptávka zdarma a nezávazně."
+  crumbs={[{ name: 'Montáž v krajích', href: '/montaz-klimatizace/' }]}
+>
+  <section class="section" style="padding-top:28px">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Montáž po celé ČR</span>
+        <h1>Montáž klimatizace Hisense ve vašem kraji</h1>
+        <p class="lead">Klimatizace Hisense montujeme ve všech krajích. Poptávku předáme prověřené partnerské firmě z vašeho regionu, která udělá obhlídku, připraví nabídku a klimatizaci namontuje.</p>
+      </div>
+      <div class="mk-grid">
+        {regions.map((r) => (
+          <a class="card mk" href={`/montaz-klimatizace/${r.id}/`}>
+            <b>{r.name}</b>
+            <span>{r.cities.slice(0, 4).join(', ')}…</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section section--tint">
+    <div class="wrap">
+      <div class="head"><span class="eyebrow">Jak to probíhá</span><h2>Od poptávky po hotovou montáž</h2></div>
+      <Steps />
+    </div>
+  </section>
+  <CtaBand />
+</Base>
+
+<style>
+  .mk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .mk { padding: 18px 20px; text-decoration: none; color: var(--ink); display: grid; gap: 4px; transition: border-color 0.2s, box-shadow 0.2s; }
+  .mk:hover { border-color: var(--teal); box-shadow: var(--shadow); }
+  .mk b { font: 800 1.1rem var(--f-display); }
+  .mk span { color: var(--ink-2); font-size: 0.88rem; }
+</style>
