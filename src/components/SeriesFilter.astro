@@ -1,20 +1,8 @@
 ---
-import { series, useLabels } from '../data/products';
+import { series } from '../data/products';
 import SeriesCard from './SeriesCard.astro';
-const tabs: [string, string][] = [['vse', 'Všechny řady'], ...Object.entries(useLabels)];
-const notes: Record<string, string> = {
-  vse: '',
-  byt: 'Do bytu se nejčastěji hodí jedna nástěnná jednotka 2,6–3,5 kW.',
-  dum: 'V domě oceníte tichý chod v ložnicích a topení i v mrazu.',
-  kancelar: 'Do kanceláře řady s vyšším výkonem, ovládáním z telefonu a rovnoměrným prouděním.',
-  loznice: 'Do ložnice vybírejte podle hlučnosti. Nejtišší řady začínají na 18–19 dB(A).',
-};
 ---
-<div class="sf" data-notes={JSON.stringify(notes)}>
-  <div class="sf__tabs" role="group" aria-label="Filtrovat řady podle použití">
-    {tabs.map(([k, l], i) => <button type="button" data-use={k} aria-pressed={i === 0 ? 'true' : 'false'}>{l}</button>)}
-  </div>
-  <p class="sf__note" aria-live="polite"></p>
+<div class="sf">
   <div class="sf__grid">
     {series.map((s) => <SeriesCard s={s} />)}
     <aside class="sf__multi" data-reveal>
@@ -26,27 +14,7 @@ const notes: Record<string, string> = {
   </div>
 </div>
 
-<script is:inline>
-  (function () {
-    var root = document.querySelector('.sf'); if (!root) return;
-    var notes = JSON.parse(root.dataset.notes), note = root.querySelector('.sf__note');
-    root.querySelector('.sf__tabs').addEventListener('click', function (e) {
-      var b = e.target.closest('[data-use]'); if (!b) return;
-      var u = b.dataset.use;
-      root.querySelectorAll('[data-use]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      root.querySelectorAll('.sc').forEach(function (c) { c.hidden = !(u === 'vse' || c.dataset.uses.split(' ').indexOf(u) > -1); c.classList.add('is-in'); });
-      note.textContent = notes[u];
-    });
-  })();
-</script>
-
 <style>
-  .sf__tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-  .sf__tabs::-webkit-scrollbar { display: none; }
-  .sf__tabs button { flex: none; font: 600 0.95rem var(--f-display); color: var(--ink); background: #fff; border: 1px solid #c9d7da; border-radius: 999px; padding: 0.6em 1.2em; min-height: 44px; cursor: pointer; transition: all 0.15s; }
-  .sf__tabs button:hover { border-color: var(--teal); }
-  .sf__tabs button[aria-pressed='true'] { background: var(--teal); border-color: var(--teal); color: #fff; }
-  .sf__note { min-height: 1.6em; color: var(--ink-2); margin: 12px 0 18px; }
   .sf__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
   .sf__multi { display: flex; flex-direction: column; justify-content: center; gap: 6px; background: var(--teal-soft); border: 1px solid var(--teal); border-radius: var(--r-l); padding: 30px 26px; }
   .sf__multi h3 { font-size: 1.45rem; }

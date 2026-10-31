@@ -26,7 +26,7 @@ const why: Record<string, Record<string, string>> = {
 };
 const data = {
   series: series.map((s) => ({ id: s.id, name: s.name, tagline: s.tagline, img: mainImage(s) })),
-  score, useBonus, why, multi: ['air-master', 'energy-pro-x', 'uni-pure', 'wings-comfort'],
+  score, useBonus, why, base: { 'uni-pure': 1 } as Record<string, number>, multi: ['air-master', 'energy-pro-x', 'uni-pure', 'wings-comfort'],
 };
 ---
 <div class="gd" data-gd={JSON.stringify(data)}>
@@ -69,11 +69,11 @@ const data = {
         var multi = root.querySelector('input[name=gd-r]:checked').value !== '1';
         if (!pr.length) pr = ['ticho', 'topeni'];
         var list = D.series.filter(function (s) { return !multi || D.multi.indexOf(s.id) > -1; }).map(function (s, idx) {
-          var sc = pr.reduce(function (t, p) { return t + D.score[s.id][p]; }, 0) + (D.useBonus[use][s.id] || 0);
+          var sc = pr.reduce(function (t, p) { return t + D.score[s.id][p]; }, 0) + (D.useBonus[use][s.id] || 0) + (D.base[s.id] || 0);
           return { s: s, sc: sc, idx: idx };
         }).sort(function (a, b) { return b.sc - a.sc || a.idx - b.idx; });
         var top = list[0].s, alt = list[1].s;
-        var reasons = pr.map(function (p) { return '<li>' + esc(D.why[top.id][p]) + '</li>'; }).join('');
+        var reasons = (top.id === 'uni-pure' ? '<li>Zlatý střed: tichá, s čistým vzduchem a Wi‑Fi v rozumné cenové hladině.</li>' : '') + pr.map(function (p) { return '<li>' + esc(D.why[top.id][p]) + '</li>'; }).join('');
         var q = '/poptavka/?rada=' + top.id + '&objekt=' + (use === 'loznice' ? 'byt' : use) + (multi ? '&mistnosti=2&reseni=multisplit' : '');
         res.innerHTML = '<span class="eyebrow">Doporučujeme</span>' +
           '<div class="gd__top"><img src="' + top.img + '" alt="" width="240" height="100" loading="lazy" /><div><h3>Hisense ' + esc(top.name) + '</h3><p>' + esc(top.tagline) + '</p></div></div>' +

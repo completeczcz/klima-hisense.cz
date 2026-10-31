@@ -9,6 +9,8 @@ export interface Series {
   id: string;
   name: string;
   tag: string;
+  /** doporučená řada – zlatý střed funkcí a ceny */
+  recommended?: boolean;
   tagline: string;
   intro: string;
   uses: Use[];
@@ -133,7 +135,8 @@ export const series: Series[] = [
   {
     id: 'uni-pure',
     name: 'Uni Pure',
-    tag: 'Tichý provoz',
+    tag: 'Doporučujeme',
+    recommended: true,
     tagline: 'Profesionální standard pro každodenní komfort',
     intro:
       'Tichá a výkonná klimatizace pro každý den. Od 19 dB(A), s ionizací Hi‑NANO a ovládáním z telefonu. Ideální do ložnice i obýváku, topí až do −22 °C.',

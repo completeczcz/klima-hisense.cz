@@ -7,7 +7,7 @@ const H = headingLevel;
 const icons = s.functions.slice(0, 5).map(featureById);
 const useSlug: Record<string, string> = { byt: 'do-bytu', dum: 'do-domu', loznice: 'do-loznice', kancelar: 'do-kancelare' };
 ---
-<article class="sc" data-uses={s.uses.join(' ')} data-reveal>
+<article class:list={['sc', { 'sc--rec': s.recommended }]} data-uses={s.uses.join(' ')} data-reveal>
   <a class="sc__stage" href={`/klimatizace/${s.id}/`} aria-label={`Hisense ${s.name} – detail`}>
     <span class="tag">{s.tag}</span>
     <img src={mainImage(s)} alt={`Klimatizace Hisense ${s.name}`} loading="lazy" width="900" height="330" />
@@ -34,6 +34,8 @@ const useSlug: Record<string, string> = { byt: 'do-bytu', dum: 'do-domu', loznic
   .sc { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); overflow: hidden; transition: box-shadow 0.3s, transform 0.3s; }
   .sc:hover { box-shadow: var(--shadow); transform: translateY(-4px); }
   .sc[hidden] { display: none; }
+  .sc--rec { border: 2px solid var(--teal); box-shadow: var(--shadow); }
+  .sc--rec .tag { background: var(--teal-dark); }
   .sc__stage { position: relative; display: grid; place-items: center; height: 200px; padding: 40px 26px 22px; background: radial-gradient(120% 100% at 50% 0%, #fff 30%, var(--teal-tint)); border-bottom: 1px solid var(--line); overflow: hidden; }
   .sc__stage .tag { position: absolute; top: 14px; left: 14px; }
   .sc__stage img { max-height: 120px; width: auto; object-fit: contain; filter: drop-shadow(0 16px 18px rgba(0, 40, 50, 0.16)); transition: transform 0.4s; }
